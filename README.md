@@ -1,32 +1,55 @@
-# React + TypeScript + Vite
+# Admin Dashboard (Frontend Only)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A React + TypeScript + Tailwind CSS recreation of the admin dashboard overview screen —
+sidebar navigation, stat cards, applications line chart, country distribution, and a
+statistics area chart. Static/mock data only, no backend.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 18 + TypeScript
+- Vite
+- Tailwind CSS
+- Recharts (charts)
+- lucide-react (icons)
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Then open the printed local URL (usually http://localhost:5173).
+
+## Build for production
+
+```bash
+npm run build
+npm run preview
+```
+
+## Project structure
+
+```
+src/
+  components/
+    charts/
+      ApplicationsChart.tsx     Line chart: student applications per month
+      CountryDistribution.tsx   Country-wise distribution bars
+      StatisticsChart.tsx       Area chart: eligibility checks vs appointments
+    Sidebar.tsx                 Left navigation with grouped sections
+    StatCard.tsx                Small metric card used in the top grid
+    Topbar.tsx                  Header bar with page title + user menu
+  data.ts                       Mock data + nav config (edit this to change content)
+  types.ts                      Shared TypeScript types
+  App.tsx                       Page layout / composition
+  index.css                     Tailwind entry + small global tweaks
+  main.tsx                      React entry point
+```
+
+## Customizing
+
+- Edit `src/data.ts` to change the sidebar links, stat card numbers, or chart data.
+- The sidebar is clickable and just updates the page title in the topbar — wire up
+  routing (e.g. react-router) if you want each item to load a real page.
+- Colors live in `tailwind.config.js` under `theme.extend.colors.brand` / `surface`.
