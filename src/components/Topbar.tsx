@@ -5,9 +5,16 @@ interface TopbarProps {
   userName: string
   onOpenMobileSidebar: () => void
   onToggleCollapse: () => void
+  onLogout: () => void
 }
 
-export default function Topbar({ title, userName, onOpenMobileSidebar, onToggleCollapse }: TopbarProps) {
+export default function Topbar({
+  title,
+  userName,
+  onOpenMobileSidebar,
+  onToggleCollapse,
+  onLogout,
+}: TopbarProps) {
   const initial = userName.charAt(0).toUpperCase()
 
   return (
@@ -65,7 +72,10 @@ export default function Topbar({ title, userName, onOpenMobileSidebar, onToggleC
           </p>
         </div>
 
-        <button className="rounded-lg border border-surface-border px-3 py-1.5 text-[12.5px] font-semibold text-slate-600 shadow-sm transition-colors hover:bg-slate-50 sm:px-3.5 sm:text-[13px]">
+        <button
+          onClick={onLogout}
+          className="rounded-lg border border-surface-border px-3 py-1.5 text-[12.5px] font-semibold text-slate-600 shadow-sm transition-colors hover:bg-slate-50 sm:px-3.5 sm:text-[13px]"
+        >
           Logout
         </button>
       </div>
