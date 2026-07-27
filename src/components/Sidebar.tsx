@@ -1,17 +1,30 @@
+// Left-hand navigation menu.
+//
+// In plain words, how this works now:
+//   - Each simple item (like "Overview" or "Director Message") is a real
+//     link — clicking it changes the URL and shows that page.
+//   - Items with a dropdown (like "Blog Posts") don't go anywhere by
+//     themselves; clicking them just opens/closes the list of sub-links
+//     underneath, and each sub-link is its own real page too.
+//   - We highlight whichever link matches the current URL, using React
+//     Router's useLocation() to read the address bar.
+
 import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { ChevronDown, GraduationCap, X } from 'lucide-react'
 import { navSections } from '../data'
+import { pathForItem, pathForSubItem } from '../lib/routes'
 
 interface SidebarProps {
-  activeLabel: string
-  onSelect: (label: string) => void
   open: boolean
   onClose: () => void
+  onNavigate: () => void
   collapsed: boolean
 }
 
-export default function Sidebar({ activeLabel, onSelect, open, onClose, collapsed }: SidebarProps) {
+export default function Sidebar({ open, onClose, onNavigate, collapsed }: SidebarProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const location = useLocation()
 
   const toggleExpanded = (label: string) => {
     setExpanded((prev) => {
@@ -72,60 +85,94 @@ export default function Sidebar({ activeLabel, onSelect, open, onClose, collapse
               )}
               <ul className="space-y-0.5">
                 {section.items.map((item) => {
-                  const isActive = item.label === activeLabel
+                  const itemPath = pathForItem(item.label)
+                  const isActive = !item.hasChildren && location.pathname === itemPath
                   const isExpanded = expanded.has(item.label)
                   const Icon = item.icon
+
+                  // Items with a dropdown just expand/collapse — they don't
+                  // navigate anywhere themselves.
+                  if (item.hasChildren) {
+                    return (
+                      <li key={item.label}>
+                        <button
+                          title={collapsed ? item.label : undefined}
+                          onClick={() => toggleExpanded(item.label)}
+                          className={`group relative flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-[13.5px] font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-surface-heading ${
+                            collapsed ? 'lg:justify-center lg:px-0 lg:py-2.5' : ''
+                          }`}
+                        >
+                          <span className={`flex items-center gap-2.5 ${collapsed ? 'lg:gap-0' : ''}`}>
+                            <Icon
+                              size={16.5}
+                              strokeWidth={2}
+                              className="text-slate-400 group-hover:text-slate-500"
+                            />
+                            <span className={collapsed ? 'lg:hidden' : ''}>{item.label}</span>
+                          </span>
+                          <ChevronDown
+                            size={14}
+                            className={`transition-transform duration-150 ${collapsed ? 'lg:hidden' : ''} ${
+                              isExpanded ? 'rotate-180' : ''
+                            } text-slate-300`}
+                          />
+                        </button>
+
+                        {item.subItems && (
+                          <div
+                            className={`grid overflow-hidden transition-all duration-200 ${
+                              collapsed ? 'lg:hidden' : ''
+                            } ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                          >
+                            <ul className="min-h-0 space-y-0.5 py-1 pl-[34px]">
+                              {item.subItems.map((sub) => {
+                                const subPath = pathForSubItem(item.label, sub)
+                                const isSubActive = location.pathname === subPath
+                                return (
+                                  <li key={sub}>
+                                    <Link
+                                      to={subPath}
+                                      onClick={onNavigate}
+                                      className={`block w-full rounded-md px-2.5 py-1.5 text-left text-[12.5px] transition-colors ${
+                                        isSubActive
+                                          ? 'bg-brand-50 font-semibold text-brand-600'
+                                          : 'text-slate-500 hover:bg-slate-50 hover:text-surface-heading'
+                                      }`}
+                                    >
+                                      {sub}
+                                    </Link>
+                                  </li>
+                                )
+                              })}
+                            </ul>
+                          </div>
+                        )}
+                      </li>
+                    )
+                  }
+
+                  // Plain items are real links to their own page.
                   return (
                     <li key={item.label}>
-                      <button
+                      <Link
+                        to={itemPath}
+                        onClick={onNavigate}
                         title={collapsed ? item.label : undefined}
-                        onClick={() => {
-                          onSelect(item.label)
-                          if (item.hasChildren) toggleExpanded(item.label)
-                        }}
-                        className={`group relative flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-[13.5px] font-medium transition-colors ${
-                          collapsed ? 'lg:justify-center lg:px-0 lg:py-2.5' : ''
+                        className={`group relative flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13.5px] font-medium transition-colors ${
+                          collapsed ? 'lg:justify-center lg:gap-0 lg:px-0 lg:py-2.5' : ''
                         } ${
                           isActive
                             ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/25'
                             : 'text-slate-600 hover:bg-slate-50 hover:text-surface-heading'
                         }`}
                       >
-                        <span className={`flex items-center gap-2.5 ${collapsed ? 'lg:gap-0' : ''}`}>
-                          <Icon
-                            size={16.5}
-                            strokeWidth={2}
-                            className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'}
-                          />
-                          <span className={collapsed ? 'lg:hidden' : ''}>{item.label}</span>
-                        </span>
-                        {item.hasChildren && (
-                          <ChevronDown
-                            size={14}
-                            className={`transition-transform duration-150 ${collapsed ? 'lg:hidden' : ''} ${
-                              isExpanded ? 'rotate-180' : ''
-                            } ${isActive ? 'text-white/80' : 'text-slate-300'}`}
-                          />
-                        )}
-                      </button>
-
-                      {item.hasChildren && item.subItems && (
-                        <div
-                          className={`grid overflow-hidden transition-all duration-200 ${
-                            collapsed ? 'lg:hidden' : ''
-                          } ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
-                        >
-                          <ul className="min-h-0 space-y-0.5 py-1 pl-[34px]">
-                            {item.subItems.map((sub) => (
-                              <li key={sub}>
-                                <button className="block w-full rounded-md px-2.5 py-1.5 text-left text-[12.5px] text-slate-500 transition-colors hover:bg-slate-50 hover:text-surface-heading">
-                                  {sub}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                        <Icon
+                          size={16.5}
+                          strokeWidth={2}
+                          className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'}
+                        />
+                        <span className={collapsed ? 'lg:hidden' : ''}>{item.label}</span>
+                      </Link>
                     </li>
                   )
                 })}
