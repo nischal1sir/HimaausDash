@@ -37,30 +37,7 @@ export default function Topbar({
         <h1 className="truncate text-[15px] font-bold text-surface-heading sm:text-base">{title}</h1>
       </div>
 
-      {/* Search — desktop only */}
-      <div className="hidden max-w-sm flex-1 md:block">
-        <label className="relative block">
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full rounded-lg border border-surface-border bg-slate-50/70 py-2 pl-9 pr-3 text-[13px] text-slate-600 placeholder:text-slate-400 outline-none transition-colors focus:border-brand-400 focus:bg-white focus:ring-2 focus:ring-brand-100"
-          />
-        </label>
-      </div>
-
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-        <button
-          className="relative rounded-full p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-600"
-          aria-label="Notifications"
-        >
-          <Bell size={18} />
-          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-rose-500 ring-2 ring-white" />
-        </button>
-
         <div className="mx-1 hidden h-6 w-px bg-surface-border sm:block" />
 
         <div className="flex items-center gap-2">
