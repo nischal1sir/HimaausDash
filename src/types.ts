@@ -38,3 +38,11 @@ export interface StatisticPoint {
   eligibility: number
   appointments: number
 }
+
+export interface DirectorMessage {
+  id: string
+  name: string
+  designation: string
+  message: string
+  updatedAt: string
+}

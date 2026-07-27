@@ -23,6 +23,7 @@ import type {
   CountryStat,
   MonthlyApplication,
   StatisticPoint,
+  DirectorMessage,
 } from './types'
 
 export const navSections: NavSection[] = [
@@ -33,7 +34,7 @@ export const navSections: NavSection[] = [
   {
     title: 'Content Management',
     items: [
-      { label: 'Blog Posts', icon: FileText, hasChildren: true, subItems: ['All Posts', 'Add New', 'Categories'] },
+      { label: 'Blog Posts', icon: FileText, hasChildren: true, subItems: ['All Posts', 'Add New'] },
       { label: 'Partners', icon: Users, hasChildren: true, subItems: ['All Partners', 'Add Partner'] },
       { label: 'Testimonials', icon: Star, hasChildren: true, subItems: ['All Testimonials', 'Add New'] },
       { label: 'Gallery', icon: Image, hasChildren: true, subItems: ['All Media', 'Upload'] },
@@ -119,4 +120,15 @@ export const statisticsData: StatisticPoint[] = [
   { label: 'May', eligibility: 1, appointments: 4 },
   { label: 'Jun', eligibility: 2, appointments: 7 },
   { label: 'Jul', eligibility: 3, appointments: 10 },
+]
+
+export const directorMessages: DirectorMessage[] = [
+  {
+    id: 'dm-1',
+    name: 'Rajesh Sharma',
+    designation: 'Founding Director',
+    message:
+      'Welcome to Himaaus Education. Our mission is to guide every student toward the right university and the right country for their future, with honest advice at every step.',
+    updatedAt: '2026-06-12',
+  },
 ]
