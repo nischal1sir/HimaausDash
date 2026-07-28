@@ -2,10 +2,10 @@
 // live directly inside App.tsx. Pulling it into its own file makes it a
 // normal page that the router can send people to at "/".
 
-import StatCard from './StatCard'
-import ApplicationsChart from './charts/ApplicationsChart'
-import CountryDistribution from './charts/CountryDistribution'
-import StatisticsChart from './charts/StatisticsChart'
+import StatCard from '../components/StatCard'
+import ApplicationsChart from '../components/charts/ApplicationsChart'
+import CountryDistribution from '../components/charts/CountryDistribution'
+import StatisticsChart from '../components/charts/StatisticsChart'
 import { statCards } from '../data'
 
 export default function OverviewPage() {
