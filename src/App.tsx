@@ -5,7 +5,7 @@
 //     to show based on the current URL.
 
 import { useState } from 'react'
-import LoginPage from './components/LoginPage'
+import LoginPage from './pages/LoginPage'
 import AppRoutes from './AppRoutes'
 import { AUTH_STORAGE_KEY } from './authConfig'
 

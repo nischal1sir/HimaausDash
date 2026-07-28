@@ -6,9 +6,11 @@
 
 import { Route, Routes } from 'react-router-dom'
 import DashboardLayout from './layouts/DashboardLayout'
-import OverviewPage from './components/OverviewPage'
-import DirectorMessagePage from './components/DirectorMessage'
-import PlaceholderPage from './components/PlaceholderPage'
+import OverviewPage from './pages/OverviewPage'
+import DirectorMessagePage from './pages/DirectorMessagePage'
+import AllEpisodesPage from './pages/podcast/AllEpisodesPage'
+import AddEpisodePage from './pages/podcast/AddEpisodePage'
+import PlaceholderPage from './pages/PlaceholderPage'
 import { navSections } from './data'
 import { buildRouteList } from './lib/routes'
 
@@ -17,7 +19,12 @@ const allRoutes = buildRouteList(navSections)
 
 // Paths that already have a real page built for them (see below). Every
 // other path in allRoutes falls back to the "coming soon" placeholder.
-const builtInPaths = new Set(['/', '/director-message'])
+const builtInPaths = new Set([
+  '/',
+  '/director-message',
+  '/podcast/all-episodes',
+  '/podcast/add-episode',
+])
 
 interface AppRoutesProps {
   onLogout: () => void
@@ -30,6 +37,8 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         {/* Pages with real, built content */}
         <Route path="/" element={<OverviewPage />} />
         <Route path="/director-message" element={<DirectorMessagePage />} />
+        <Route path="/podcast/all-episodes" element={<AllEpisodesPage />} />
+        <Route path="/podcast/add-episode" element={<AddEpisodePage />} />
 
         {/* Every other sidebar link still works as a real page — it just
             shows a simple "coming soon" placeholder until it's built. */}

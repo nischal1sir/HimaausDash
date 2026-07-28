@@ -46,3 +46,10 @@ export interface DirectorMessage {
   message: string
   updatedAt: string
 }
+
+export interface PodcastEpisode {
+  id: string
+  title: string
+  videoUrl: string
+  addedAt: string
+}
