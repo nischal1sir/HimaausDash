@@ -28,7 +28,7 @@ import type {
 export const navSections: NavSection[] = [
   {
     title: 'Dashboard',
-    items: [{ label: 'Overview', icon: LayoutGrid }],
+    items: [{ label: 'Overview', icon: LayoutGrid, path: '/' }],
   },
   {
     title: 'Content Management',
@@ -49,8 +49,8 @@ export const navSections: NavSection[] = [
   {
     title: 'Services & Appointments',
     items: [
-      { label: 'Appointments', icon: CalendarCheck },
-      { label: 'Contacts', icon: Mail },
+      { label: 'Appointments', icon: CalendarCheck, path: '/appointments' },
+      { label: 'Contacts', icon: Mail, path: '/contacts' },
     ],
   },
   {

@@ -1,17 +1,20 @@
 import { useState } from 'react'
 import { ChevronDown, GraduationCap, X } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { navSections } from '../data'
 
 interface SidebarProps {
-  activeLabel: string
-  onSelect: (label: string) => void
+  activeLabel?: string
+  onSelect?: (label: string) => void
   open: boolean
   onClose: () => void
   collapsed: boolean
 }
 
-export default function Sidebar({ activeLabel, onSelect, open, onClose, collapsed }: SidebarProps) {
+export default function Sidebar({ open, onClose, collapsed }: SidebarProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const toggleExpanded = (label: string) => {
     setExpanded((prev) => {
@@ -39,7 +42,7 @@ export default function Sidebar({ activeLabel, onSelect, open, onClose, collapse
       >
         {/* Brand */}
         <div className="flex h-[65px] shrink-0 items-center justify-between border-b border-surface-border px-4">
-          <div className="flex items-center gap-2.5 overflow-hidden">
+          <Link to="/" className="flex items-center gap-2.5 overflow-hidden">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-sm shadow-brand-600/20">
               <GraduationCap size={18} strokeWidth={2.25} />
             </div>
@@ -47,7 +50,7 @@ export default function Sidebar({ activeLabel, onSelect, open, onClose, collapse
               <p className="whitespace-nowrap text-[15px] font-bold text-surface-heading">Admin</p>
               <p className="whitespace-nowrap text-[11px] text-surface-muted">Dashboard</p>
             </div>
-          </div>
+          </Link>
           <button
             onClick={onClose}
             className="rounded-md p-1 text-slate-400 hover:bg-slate-50 hover:text-slate-600 lg:hidden"
@@ -72,7 +75,7 @@ export default function Sidebar({ activeLabel, onSelect, open, onClose, collapse
               )}
               <ul className="space-y-0.5">
                 {section.items.map((item) => {
-                  const isActive = item.label === activeLabel
+                  const isActive = item.path ? location.pathname === item.path : false
                   const isExpanded = expanded.has(item.label)
                   const Icon = item.icon
                   return (
@@ -80,7 +83,10 @@ export default function Sidebar({ activeLabel, onSelect, open, onClose, collapse
                       <button
                         title={collapsed ? item.label : undefined}
                         onClick={() => {
-                          onSelect(item.label)
+                          if (item.path) {
+                            navigate(item.path)
+                            onClose()
+                          }
                           if (item.hasChildren) toggleExpanded(item.label)
                         }}
                         className={`group relative flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-[13.5px] font-medium transition-colors ${
