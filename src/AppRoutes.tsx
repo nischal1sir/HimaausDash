@@ -15,6 +15,9 @@ import { navSections } from './data'
 import { buildRouteList } from './lib/routes'
 import AppointmentsPage from './components/Appointments/AppointmentsPage'
 import ContactUsPage from './components/Contact-us/ContactUsPage'
+import AllPostsPage from './pages/blog/AllPostsPage'
+import NewPostPage from './pages/blog/NewPostPage'
+import EditPostPage from './pages/blog/EditPostPage'
 
 // Every sidebar link, turned into a { path, label } pair.
 const allRoutes = buildRouteList(navSections)
@@ -26,6 +29,8 @@ const builtInPaths = new Set([
   '/director-message',
   '/podcast/all-episodes',
   '/podcast/add-episode',
+  '/blog-posts/all-posts',
+  '/blog-posts/new-post',
 ])
 
 interface AppRoutesProps {
@@ -43,7 +48,9 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/podcast/add-episode" element={<AddEpisodePage />} />
         <Route path="/appointments" element={<AppointmentsPage />} />
         <Route path="/contacts" element={<ContactUsPage />} />
-
+        <Route path="/blog-posts/all-posts" element={<AllPostsPage />} />
+        <Route path="/blog-posts/new-post" element={<NewPostPage />} />
+        <Route path="/blog-posts/edit/:id" element={<EditPostPage />} />
 
         {/* Every other sidebar link still works as a real page — it just
             shows a simple "coming soon" placeholder until it's built. */}

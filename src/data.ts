@@ -29,12 +29,12 @@ import type {
 export const navSections: NavSection[] = [
   {
     title: 'Dashboard',
-    items: [{ label: 'Overview', icon: LayoutGrid, path: '/' }],
+    items: [{ label: 'Overview', icon: LayoutGrid }],
   },
   {
     title: 'Content Management',
     items: [
-      { label: 'Blog Posts', icon: FileText, hasChildren: true, subItems: ['All Posts', 'Add New'] },
+      { label: 'Blog Posts', icon: FileText, hasChildren: true, subItems: ['All Posts', 'New Post'] },
       { label: 'Partners', icon: Users, hasChildren: true, subItems: ['All Partners', 'Add Partner'] },
       { label: 'Testimonials', icon: Star, hasChildren: true, subItems: ['All Testimonials', 'Add New'] },
       { label: 'Gallery', icon: Image, hasChildren: true, subItems: ['All Media', 'Upload'] },
@@ -50,8 +50,8 @@ export const navSections: NavSection[] = [
   {
     title: 'Services & Appointments',
     items: [
-      { label: 'Appointments', icon: CalendarCheck, path: '/appointments' },
-      { label: 'Contacts', icon: Mail, path: '/contacts' },
+      { label: 'Appointments', icon: CalendarCheck },
+      { label: 'Contacts', icon: Mail },
     ],
   },
   {

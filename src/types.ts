@@ -6,7 +6,6 @@ export interface NavItem {
   hasChildren?: boolean
   badge?: number
   subItems?: string[]
-  path?: string
 }
 
 export interface NavSection {
@@ -53,4 +52,17 @@ export interface PodcastEpisode {
   title: string
   videoUrl: string
   addedAt: string
+}
+
+export interface BlogPost {
+  id: string
+  title: string
+  link: string
+  author: string
+  excerpt: string
+  longDescription: string
+  category: string
+  image: string
+  status: 'draft' | 'published'
+  date: string
 }
