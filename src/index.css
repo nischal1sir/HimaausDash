@@ -79,3 +79,12 @@ a:focus-visible {
   @apply from-slate-200 to-slate-300;
 }
 
+/* Contact Management Page - Subject badge scoped classes */
+.yit-contact-subject-test-preparation,
+.yit-contact-subject-mock-test,
+.yit-contact-subject-visa-processing,
+.yit-contact-subject-university-admission,
+.yit-contact-subject-financial-advice {
+  @apply bg-white text-slate-900;
+}
+

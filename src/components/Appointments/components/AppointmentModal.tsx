@@ -99,7 +99,7 @@ export default function AppointmentModal({ open, onClose, onSave, initial }: Pro
                 value={form.name}
                 onChange={(e) => set('name', e.target.value)}
                 className="w-full rounded-lg border border-surface-border bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-                placeholder="e.g. Sophia Chen"
+                placeholder="e.g. Nischal Rai"
               />
             </label>
             <label className="block">
@@ -110,7 +110,7 @@ export default function AppointmentModal({ open, onClose, onSave, initial }: Pro
                 value={form.email}
                 onChange={(e) => set('email', e.target.value)}
                 className="w-full rounded-lg border border-surface-border bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-                placeholder="sophia@example.com"
+                placeholder="nischal@example.com"
               />
             </label>
           </div>

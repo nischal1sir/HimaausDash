@@ -19,9 +19,9 @@ export default function ViewModal({ open, onClose, applicant }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md rounded-2xl border border-surface-border bg-white shadow-2xl">
+      <div className="relative z-10 w-full max-w-md max-h-[90vh] flex flex-col rounded-2xl border border-surface-border bg-white shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-surface-border px-6 py-4">
+        <div className="flex items-center justify-between border-b border-surface-border px-6 py-4 shrink-0">
           <h2 className="text-lg font-bold text-surface-heading">Applicant Details</h2>
           <button
             onClick={onClose}
@@ -32,7 +32,7 @@ export default function ViewModal({ open, onClose, applicant }: Props) {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-5">
+        <div className="px-6 py-5 space-y-5 overflow-y-auto flex-1 min-h-0 scrollbar-thin">
           {/* Name + Avatar */}
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-lg font-bold text-white">
@@ -94,7 +94,8 @@ export default function ViewModal({ open, onClose, applicant }: Props) {
           </div>
         </div>
 
-        <div className="border-t border-surface-border px-6 py-4">
+        {/* Footer */}
+        <div className="border-t border-surface-border px-6 py-4 shrink-0">
           <button
             onClick={onClose}
             className="w-full rounded-lg bg-slate-100 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-200"
