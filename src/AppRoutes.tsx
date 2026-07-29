@@ -13,6 +13,14 @@ import AddEpisodePage from './pages/podcast/AddEpisodePage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import { navSections } from './data'
 import { buildRouteList } from './lib/routes'
+import {
+  PartnersProvider,
+  PartnersPage,
+  TestimonialsProvider,
+  TestimonialsPage,
+  MilestonesProvider,
+  MilestonesPage,
+} from './features/testimonials-partners'
 
 // Every sidebar link, turned into a { path, label } pair.
 const allRoutes = buildRouteList(navSections)
@@ -24,6 +32,12 @@ const builtInPaths = new Set([
   '/director-message',
   '/podcast/all-episodes',
   '/podcast/add-episode',
+  '/partners/all-partners',
+  '/partners/add-partner',
+  '/testimonials/all-testimonials',
+  '/testimonials/add-new',
+  '/milestones/all-milestones',
+  '/milestones/add-milestone',
 ])
 
 interface AppRoutesProps {
@@ -39,6 +53,13 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/director-message" element={<DirectorMessagePage />} />
         <Route path="/podcast/all-episodes" element={<AllEpisodesPage />} />
         <Route path="/podcast/add-episode" element={<AddEpisodePage />} />
+
+        <Route path="/partners/all-partners" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
+        <Route path="/partners/add-partner" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
+        <Route path="/testimonials/all-testimonials" element={<TestimonialsProvider><TestimonialsPage /></TestimonialsProvider>} />
+        <Route path="/testimonials/add-new" element={<TestimonialsProvider><TestimonialsPage /></TestimonialsProvider>} />
+        <Route path="/milestones/all-milestones" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
+        <Route path="/milestones/add-milestone" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
 
         {/* Every other sidebar link still works as a real page — it just
             shows a simple "coming soon" placeholder until it's built. */}
