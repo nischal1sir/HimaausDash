@@ -47,3 +47,44 @@ a:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Appointments Page - Custom Scoped utility classes */
+.yit-appt-status-confirmed {
+  @apply text-emerald-600 bg-emerald-50;
+}
+.yit-appt-status-pending {
+  @apply text-amber-600 bg-amber-50;
+}
+.yit-appt-status-cancelled {
+  @apply text-red-500 bg-red-50;
+}
+.yit-appt-test-ielts,
+.yit-appt-test-toefl,
+.yit-appt-test-pte,
+.yit-appt-test-none {
+  @apply bg-white text-slate-900;
+}
+
+
+.yit-appt-avatar-0,
+.yit-appt-avatar-1,
+.yit-appt-avatar-2,
+.yit-appt-avatar-3,
+.yit-appt-avatar-4,
+.yit-appt-avatar-5,
+.yit-appt-avatar-6,
+.yit-appt-avatar-7,
+.yit-appt-avatar-8,
+.yit-appt-avatar-9 {
+  @apply from-slate-200 to-slate-300;
+}
+
+/* Contact Management Page - Subject badge scoped classes */
+.yit-contact-subject-test-preparation,
+.yit-contact-subject-mock-test,
+.yit-contact-subject-visa-processing,
+.yit-contact-subject-university-admission,
+.yit-contact-subject-financial-advice {
+  @apply bg-white text-slate-900;
+}
+

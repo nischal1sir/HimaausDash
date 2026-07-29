@@ -52,7 +52,7 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
       >
         {/* Brand */}
         <div className="flex h-[65px] shrink-0 items-center justify-between border-b border-surface-border px-4">
-          <div className="flex items-center gap-2.5 overflow-hidden">
+          <Link to="/" className="flex items-center gap-2.5 overflow-hidden">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-sm shadow-brand-600/20">
               <GraduationCap size={18} strokeWidth={2.25} />
             </div>
@@ -60,7 +60,7 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
               <p className="whitespace-nowrap text-[15px] font-bold text-surface-heading">Admin</p>
               <p className="whitespace-nowrap text-[11px] text-surface-muted">Dashboard</p>
             </div>
-          </div>
+          </Link>
           <button
             onClick={onClose}
             className="rounded-md p-1 text-slate-400 hover:bg-slate-50 hover:text-slate-600 lg:hidden"
