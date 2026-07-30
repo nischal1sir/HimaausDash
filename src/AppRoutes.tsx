@@ -16,10 +16,13 @@ import { buildRouteList } from './lib/routes'
 import {
   PartnersProvider,
   PartnersPage,
+  AddPartnerPage,
   TestimonialsProvider,
   TestimonialsPage,
+  AddTestimonialPage,
   MilestonesProvider,
   MilestonesPage,
+  AddMilestonePage,
 } from './features/testimonials-partners'
 
 // Every sidebar link, turned into a { path, label } pair.
@@ -55,11 +58,11 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/podcast/add-episode" element={<AddEpisodePage />} />
 
         <Route path="/partners/all-partners" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
-        <Route path="/partners/add-partner" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
+        <Route path="/partners/add-partner" element={<PartnersProvider><AddPartnerPage /></PartnersProvider>} />
         <Route path="/testimonials/all-testimonials" element={<TestimonialsProvider><TestimonialsPage /></TestimonialsProvider>} />
-        <Route path="/testimonials/add-new" element={<TestimonialsProvider><TestimonialsPage /></TestimonialsProvider>} />
+        <Route path="/testimonials/add-new" element={<TestimonialsProvider><AddTestimonialPage /></TestimonialsProvider>} />
         <Route path="/milestones/all-milestones" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
-        <Route path="/milestones/add-milestone" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
+        <Route path="/milestones/add-milestone" element={<MilestonesProvider><AddMilestonePage /></MilestonesProvider>} />
 
         {/* Every other sidebar link still works as a real page — it just
             shows a simple "coming soon" placeholder until it's built. */}

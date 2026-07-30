@@ -1,9 +1,6 @@
-import { useSearchParams } from "react-router-dom";
-
-import { useLocation, useNavigate } from "react-router-dom";
-
 import { useEffect, useMemo, useState } from "react";
-import { Globe2, Plus, ToggleLeft, ToggleRight, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Globe2, Plus, ToggleLeft, ToggleRight, Users, ExternalLink } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import StatsCard from "../components/StatsCard";
 import TableToolbar from "../components/TableToolbar";
@@ -18,10 +15,10 @@ import PartnerForm from "../components/PartnerForm";
 import { usePartners } from "../hooks/usePartners";
 import type { Partner, PartnerFormValues, PartnerStatus } from "../types/partner";
 import type { TableColumn, ViewMode } from "../types/common";
-import { ExternalLink } from "lucide-react";
 
 export default function PartnersPage() {
-  const { partners, isLoading, addPartner, editPartner, removePartner } = usePartners();
+  const { partners, isLoading, editPartner, removePartner } = usePartners();
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PartnerStatus | "All">("All");
@@ -29,33 +26,14 @@ export default function PartnersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [partnerToDelete, setPartnerToDelete] = useState<Partner | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-useEffect(() => {
-  setCurrentPage(1);
-}, [search, pageSize, statusFilter]);
-
-const location = useLocation();
-const navigate = useNavigate();
-useEffect(() => {
-  if (location.pathname.endsWith("/add-partner")) {
-    setEditingPartner(null);
-    setIsFormOpen(true);
-  }
-}, [location.pathname]);
-
-const [searchParams, setSearchParams] = useSearchParams();
-useEffect(() => {
-  if (searchParams.get("action") === "add") {
-    setEditingPartner(null);
-    setIsFormOpen(true);
-    setSearchParams({}, { replace: true });
-  }
-}, [searchParams]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, pageSize, statusFilter]);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -88,27 +66,20 @@ useEffect(() => {
     };
   }, [partners]);
 
-  const openAddForm = () => {
-    setEditingPartner(null);
-    setIsFormOpen(true);
+  const openAddPage = () => {
+    navigate("/partners/add-partner");
   };
 
   const openEditForm = (partner: Partner) => {
     setEditingPartner(partner);
-    setIsFormOpen(true);
   };
 
-  const handleSubmit = async (values: PartnerFormValues) => {
+  const handleEditSubmit = async (values: PartnerFormValues) => {
+    if (!editingPartner) return;
     setIsSaving(true);
     try {
-      if (editingPartner) {
-        await editPartner(editingPartner.id, values);
-      } else {
-        await addPartner(values);
-      }
-      setIsFormOpen(false);
+      await editPartner(editingPartner.id, values);
       setEditingPartner(null);
-      navigate("/partners/all-partners");
     } finally {
       setIsSaving(false);
     }
@@ -185,12 +156,11 @@ useEffect(() => {
   return (
     <div>
       <PageHeader
-        title="Partners"
+        title="All Partners"
         subtitle="Manage universities, educational institutions, and partner organizations."
-        breadcrumbs={[{ label: "Dashboard", to: "/" }, { label: "Partners" }]}
         action={
           <button
-            onClick={openAddForm}
+            onClick={openAddPage}
             className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
@@ -262,24 +232,20 @@ useEffect(() => {
       </div>
 
       <Modal
-        isOpen={isFormOpen}
-        title={editingPartner ? "Edit Partner" : "Add Partner"}
-        subtitle={editingPartner ? "Update this partner's details." : "Add a new partner organization."}
-        onClose={() => {setIsFormOpen(false);
-        navigate("/partners/all-partners");
-      }
-      }
+        isOpen={!!editingPartner}
+        title="Edit Partner"
+        subtitle="Update this partner's details."
+        onClose={() => setEditingPartner(null)}
       >
-        <PartnerForm
-          initialValues={editingPartner ?? undefined}
-          onSubmit={handleSubmit}
-          onCancel={() => {setIsFormOpen(false);
-          navigate("/partners/all-partners");
-      }
-      }
-          isSaving={isSaving}
-          submitLabel={editingPartner ? "Save Changes" : "Add Partner"}
-        />
+        {editingPartner && (
+          <PartnerForm
+            initialValues={editingPartner}
+            onSubmit={handleEditSubmit}
+            onCancel={() => setEditingPartner(null)}
+            isSaving={isSaving}
+            submitLabel="Save Changes"
+          />
+        )}
       </Modal>
 
       <DeleteModal

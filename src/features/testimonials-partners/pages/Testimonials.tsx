@@ -1,8 +1,5 @@
-import { useSearchParams } from "react-router-dom";
-
-import { useLocation, useNavigate } from "react-router-dom";
-
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Clock, Plus, Star, Trash2, Users } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import StatsCard from "../components/StatsCard";
@@ -38,8 +35,9 @@ function CardSkeleton() {
 }
 
 export default function TestimonialsPage() {
-  const { testimonials, isLoading, addTestimonial, editTestimonial, removeTestimonial, bulkSetStatus, bulkRemove } =
+  const { testimonials, isLoading, editTestimonial, removeTestimonial, bulkSetStatus, bulkRemove } =
     useTestimonials();
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<TestimonialStatus | "All">("All");
@@ -48,7 +46,6 @@ export default function TestimonialsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [testimonialToDelete, setTestimonialToDelete] = useState<Testimonial | null>(null);
@@ -56,27 +53,9 @@ export default function TestimonialsPage() {
   const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
   const [isBulkWorking, setIsBulkWorking] = useState(false);
 
-useEffect(() => {
-  setCurrentPage(1);
-}, [search, pageSize, statusFilter]);
-
-const location = useLocation();
-const navigate = useNavigate();
-useEffect(() => {
-  if (location.pathname.endsWith("/add-new")) {
-    setEditingTestimonial(null);
-    setIsFormOpen(true);
-  }
-}, [location.pathname]);
-
-const [searchParams, setSearchParams] = useSearchParams();
-useEffect(() => {
-  if (searchParams.get("action") === "add") {
-    setEditingTestimonial(null);
-    setIsFormOpen(true);
-    setSearchParams({}, { replace: true });
-  }
-}, [searchParams]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, pageSize, statusFilter]);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -109,27 +88,20 @@ useEffect(() => {
     };
   }, [testimonials]);
 
-  const openAddForm = () => {
-    setEditingTestimonial(null);
-    setIsFormOpen(true);
+  const openAddPage = () => {
+    navigate("/testimonials/add-new");
   };
 
   const openEditForm = (testimonial: Testimonial) => {
     setEditingTestimonial(testimonial);
-    setIsFormOpen(true);
   };
 
-  const handleSubmit = async (values: TestimonialFormValues) => {
+  const handleEditSubmit = async (values: TestimonialFormValues) => {
+    if (!editingTestimonial) return;
     setIsSaving(true);
     try {
-      if (editingTestimonial) {
-        await editTestimonial(editingTestimonial.id, values);
-      } else {
-        await addTestimonial(values);
-      }
-      setIsFormOpen(false);
+      await editTestimonial(editingTestimonial.id, values);
       setEditingTestimonial(null);
-      navigate("/testimonials/all-testimonials");
     } finally {
       setIsSaving(false);
     }
@@ -180,12 +152,11 @@ useEffect(() => {
   return (
     <div>
       <PageHeader
-        title="Testimonials"
+        title="All Testimonials"
         subtitle="Manage student reviews and success stories."
-        breadcrumbs={[{ label: "Dashboard", to: "/" }, { label: "Testimonials" }]}
         action={
           <button
-            onClick={openAddForm}
+            onClick={openAddPage}
             className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
@@ -277,7 +248,7 @@ useEffect(() => {
             title="No testimonials found"
             description="Try a different search term or add a new testimonial."
             actionLabel="Add Testimonial"
-            onAction={openAddForm}
+            onAction={openAddPage}
           />
         ) : viewMode === "grid" ? (
           <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -311,22 +282,20 @@ useEffect(() => {
       </div>
 
       <Modal
-        isOpen={isFormOpen}
-        title={editingTestimonial ? "Edit Testimonial" : "Add Testimonial"}
-        subtitle={editingTestimonial ? "Update this student testimonial." : "Add a new student testimonial."}
-        onClose={() => {setIsFormOpen(false);
-  navigate("/testimonials/all-testimonials");
-}}
+        isOpen={!!editingTestimonial}
+        title="Edit Testimonial"
+        subtitle="Update this student testimonial."
+        onClose={() => setEditingTestimonial(null)}
       >
-        <TestimonialForm
-          initialValues={editingTestimonial ?? undefined}
-          onSubmit={handleSubmit}
-          onCancel={() => {setIsFormOpen(false);
-  navigate("/testimonials/all-testimonials");
-}}
-          isSaving={isSaving}
-          submitLabel={editingTestimonial ? "Save Changes" : "Add Testimonial"}
-        />
+        {editingTestimonial && (
+          <TestimonialForm
+            initialValues={editingTestimonial}
+            onSubmit={handleEditSubmit}
+            onCancel={() => setEditingTestimonial(null)}
+            isSaving={isSaving}
+            submitLabel="Save Changes"
+          />
+        )}
       </Modal>
 
       <DeleteModal

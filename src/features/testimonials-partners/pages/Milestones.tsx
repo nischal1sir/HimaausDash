@@ -1,8 +1,5 @@
-import { useSearchParams } from "react-router-dom";
-
-import { useLocation, useNavigate } from "react-router-dom";
-
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Flag, Plus, Trophy } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import StatsCard from "../components/StatsCard";
@@ -16,40 +13,22 @@ import { useMilestones } from "../hooks/useMilestones";
 import type { Milestone, MilestoneFormValues, MilestoneStatus } from "../types/milestone";
 
 export default function MilestonesPage() {
-  const { milestones, isLoading, addMilestone, editMilestone, removeMilestone } = useMilestones();
+  const { milestones, isLoading, editMilestone, removeMilestone } = useMilestones();
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<MilestoneStatus | "All">("All");
   const [pageSize, setPageSize] = useState(6);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [milestoneToDelete, setMilestoneToDelete] = useState<Milestone | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-  setCurrentPage(1);
-}, [search, pageSize, statusFilter]);
-
-const location = useLocation();
-const navigate = useNavigate();
-useEffect(() => {
-  if (location.pathname.endsWith("/add-milestone")) {
-    setEditingMilestone(null);
-    setIsFormOpen(true);
-  }
-}, [location.pathname]);
-
-const [searchParams, setSearchParams] = useSearchParams();
-useEffect(() => {
-  if (searchParams.get("action") === "add") {
-    setEditingMilestone(null);
-    setIsFormOpen(true);
-    setSearchParams({}, { replace: true });
-  }
-}, [searchParams]);
+    setCurrentPage(1);
+  }, [search, pageSize, statusFilter]);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -81,27 +60,20 @@ useEffect(() => {
     };
   }, [milestones]);
 
-  const openAddForm = () => {
-    setEditingMilestone(null);
-    setIsFormOpen(true);
+  const openAddPage = () => {
+    navigate("/milestones/add-milestone");
   };
 
   const openEditForm = (milestone: Milestone) => {
     setEditingMilestone(milestone);
-    setIsFormOpen(true);
   };
 
-  const handleSubmit = async (values: MilestoneFormValues) => {
+  const handleEditSubmit = async (values: MilestoneFormValues) => {
+    if (!editingMilestone) return;
     setIsSaving(true);
     try {
-      if (editingMilestone) {
-        await editMilestone(editingMilestone.id, values);
-      } else {
-        await addMilestone(values);
-      }
-      setIsFormOpen(false);
+      await editMilestone(editingMilestone.id, values);
       setEditingMilestone(null);
-      navigate("/milestones/all-milestones");
     } finally {
       setIsSaving(false);
     }
@@ -121,12 +93,11 @@ useEffect(() => {
   return (
     <div>
       <PageHeader
-        title="Milestones"
+        title="All Milestones"
         subtitle="Manage company achievements and statistics."
-        breadcrumbs={[{ label: "Dashboard", to: "/" }, { label: "Milestones" }]}
         action={
           <button
-            onClick={openAddForm}
+            onClick={openAddPage}
             className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
@@ -181,28 +152,26 @@ useEffect(() => {
       </div>
 
       <Modal
-        isOpen={isFormOpen}
-        title={editingMilestone ? "Edit Milestone" : "Add Milestone"}
-        subtitle={editingMilestone ? "Update this achievement or statistic." : "Create a new company achievement or statistic."}
-        onClose={() => {setIsFormOpen(false);
-  navigate("/milestones/all-milestones");
-}}
+        isOpen={!!editingMilestone}
+        title="Edit Milestone"
+        subtitle="Update this achievement or statistic."
+        onClose={() => setEditingMilestone(null)}
       >
-        <MilestoneForm
-          initialValues={editingMilestone ?? undefined}
-          onSubmit={handleSubmit}
-          onCancel={() => setIsFormOpen(false)}
-          isSaving={isSaving}
-          submitLabel={editingMilestone ? "Save Changes" : "Add Milestone"}
-        />
+        {editingMilestone && (
+          <MilestoneForm
+            initialValues={editingMilestone}
+            onSubmit={handleEditSubmit}
+            onCancel={() => setEditingMilestone(null)}
+            isSaving={isSaving}
+            submitLabel="Save Changes"
+          />
+        )}
       </Modal>
 
       <DeleteModal
         isOpen={!!milestoneToDelete}
         itemName={milestoneToDelete?.title ?? ""}
-        onCancel={() => {setIsFormOpen(false);
-  navigate("/milestones/all-milestones");
-}}
+        onCancel={() => setMilestoneToDelete(null)}
         onConfirm={handleDelete}
         isDeleting={isDeleting}
       />
