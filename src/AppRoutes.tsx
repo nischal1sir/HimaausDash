@@ -68,7 +68,6 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/blog-posts/all-posts" element={<AllPostsPage />} />
         <Route path="/blog-posts/new-post" element={<NewPostPage />} />
         <Route path="/blog-posts/edit/:id" element="" />
-
         <Route path="/partners/all-partners" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
         <Route path="/partners/add-partner" element={<PartnersProvider><AddPartnerPage /></PartnersProvider>} />
         <Route path="/testimonials/all-testimonials" element={<TestimonialsProvider><TestimonialsPage /></TestimonialsProvider>} />
