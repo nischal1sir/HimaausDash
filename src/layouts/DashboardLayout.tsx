@@ -18,9 +18,9 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ onLogout }: DashboardLayoutProps) {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
-  const location = useLocation()
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
 
   // Find a friendly title for the page we're currently looking at.
   const currentRoute = allRoutes.find((route) => route.path === location.pathname)
@@ -51,3 +51,5 @@ export default function DashboardLayout({ onLogout }: DashboardLayoutProps) {
     </div>
   )
 }
+
+

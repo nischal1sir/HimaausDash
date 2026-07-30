@@ -46,3 +46,8 @@ export interface DirectorMessage {
   message: string
   updatedAt: string
 }
+
+export interface FAQItem {
+  question: string
+  answer: string
+}

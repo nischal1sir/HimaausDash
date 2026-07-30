@@ -1,48 +1,148 @@
-// Every route in the app lives here, in one place.
-//
-// In plain words: this file is the "map" — it says which URL shows which
-// page. If you ever want to see (or change) what page an address goes to,
-// this is the only file you need to open.
+import {
+  LayoutGrid,
+  FileText,
+  Users,
+  Star,
+  Image,
+  CalendarDays,
+  HelpCircle,
+  Headphones,
+  Target,
+  ListChecks,
+  MessageSquare,
+  Bell,
+  CalendarCheck,
+  Mail,
+  UserCircle2,
+  GraduationCap,
+  MessageCircle,
+} from 'lucide-react'
+import type {
+  NavSection,
+  StatCardData,
+  CountryStat,
+  MonthlyApplication,
+  StatisticPoint,
+  DirectorMessage,
+} from './types'
 
-import { Route, Routes } from 'react-router-dom'
-import DashboardLayout from './layouts/DashboardLayout'
-import OverviewPage from './components/OverviewPage'
-import DirectorMessagePage from './components/DirectorMessage'
-import PlaceholderPage from './components/PlaceholderPage'
-import { navSections } from './data'
-import { buildRouteList } from './lib/routes'
+export const navSections: NavSection[] = [
+  {
+    title: 'Dashboard',
+    items: [{ label: 'Overview', icon: LayoutGrid }],
+  },
+  {
+    title: 'Content Management',
+    items: [
+      { label: 'Blog Posts', icon: FileText, hasChildren: true, subItems: ['All Posts', 'Add New'] },
+      { label: 'Partners', icon: Users, hasChildren: true, subItems: ['All Partners', 'Add Partner'] },
+      { label: 'Testimonials', icon: Star, hasChildren: true, subItems: ['All Testimonials', 'Add New'] },
+      { label: 'Gallery', icon: Image, hasChildren: true, subItems: ['All Media', 'Upload'] },
+      { label: 'Events', icon: CalendarDays, hasChildren: true, subItems: ['Upcoming', 'Past Events', 'Add Event'] },
+      { label: 'FAQ', icon: HelpCircle, hasChildren: true, subItems: ['All FAQs', 'Add FAQ'] },
+      { label: 'Podcast', icon: Headphones, hasChildren: true, subItems: ['All Episodes', 'Add Episode'] },
+      { label: 'Milestones', icon: Target, hasChildren: true, subItems: ['All Milestones', 'Add Milestone'] },
+      { label: 'Eligibility', icon: ListChecks, hasChildren: true, subItems: ['Submissions', 'Criteria'] },
+      { label: 'Director Message', icon: MessageSquare },
+      { label: 'Notice', icon: Bell, hasChildren: true, subItems: ['All Notices', 'Add Notice'] },
+    ],
+  },
+  {
+    title: 'Services & Appointments',
+    items: [
+      { label: 'Appointments', icon: CalendarCheck },
+      { label: 'Contacts', icon: Mail },
+    ],
+  },
+  {
+    title: 'Team Management',
+    items: [{ label: 'Team Profiles', icon: UserCircle2, hasChildren: true, subItems: ['All Members', 'Add Member'] }],
+  },
+]
 
-// Every sidebar link, turned into a { path, label } pair.
-const allRoutes = buildRouteList(navSections)
+export const statCards: StatCardData[] = [
+  {
+    label: 'Total Eligibility Students',
+    value: 3,
+    icon: GraduationCap,
+    iconBg: 'bg-brand-50',
+    iconColor: 'text-brand-600',
+  },
+  {
+    label: 'Total Leads / Inquiries',
+    value: 20,
+    icon: MessageCircle,
+    iconBg: 'bg-amber-50',
+    iconColor: 'text-amber-500',
+  },
+  {
+    label: 'Total Appointments',
+    value: 12,
+    icon: CalendarDays,
+    iconBg: 'bg-sky-50',
+    iconColor: 'text-sky-500',
+  },
+  {
+    label: 'Total Blogs',
+    value: 2,
+    icon: FileText,
+    iconBg: 'bg-indigo-50',
+    iconColor: 'text-indigo-500',
+  },
+  {
+    label: 'Total Podcasts',
+    value: 4,
+    icon: Headphones,
+    iconBg: 'bg-purple-50',
+    iconColor: 'text-purple-500',
+  },
+]
 
-// Paths that already have a real page built for them (see below). Every
-// other path in allRoutes falls back to the "coming soon" placeholder.
-const builtInPaths = new Set(['/', '/director-message'])
+export const countryStats: CountryStat[] = [
+  { country: 'Australia', flag: '🇦🇺', students: 1, percent: 33 },
+  { country: 'Nepal', flag: '🇳🇵', students: 1, percent: 33 },
+  { country: 'USA', flag: '🇺🇸', students: 1, percent: 33 },
+]
 
-interface AppRoutesProps {
-  onLogout: () => void
-}
+export const monthlyApplications: MonthlyApplication[] = [
+  { month: 'Feb', applications: 0 },
+  { month: 'Mar', applications: 0 },
+  { month: 'Apr', applications: 0 },
+  { month: 'May', applications: 0 },
+  { month: 'Jun', applications: 0 },
+  { month: 'Jul', applications: 2 },
+]
 
-export default function AppRoutes({ onLogout }: AppRoutesProps) {
-  return (
-    <Routes>
-      <Route element={<DashboardLayout onLogout={onLogout} />}>
-        {/* Pages with real, built content */}
-        <Route path="/" element={<OverviewPage />} />
-        <Route path="/director-message" element={<DirectorMessagePage />} />
+export const statisticsData: StatisticPoint[] = [
+  { label: 'Feb', eligibility: 0, appointments: 0 },
+  { label: 'Mar', eligibility: 0, appointments: 1 },
+  { label: 'Apr', eligibility: 0, appointments: 2 },
+  { label: 'May', eligibility: 1, appointments: 4 },
+  { label: 'Jun', eligibility: 2, appointments: 7 },
+  { label: 'Jul', eligibility: 3, appointments: 10 },
+]
 
-        {/* Every other sidebar link still works as a real page — it just
-            shows a simple "coming soon" placeholder until it's built. */}
-        {allRoutes
-          .filter((route) => !builtInPaths.has(route.path))
-          .map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={<PlaceholderPage title={route.label} />}
-            />
-          ))}
-      </Route>
-    </Routes>
-  )
-}
+export const directorMessages: DirectorMessage[] = [
+  {
+    id: 'dm-1',
+    name: 'Rajesh Sharma',
+    designation: 'Foundings Director',
+    message:
+      'Welcome to Himaaus Education. Our mission is to guide every student toward the right university and the right country for their future, with honest advice at every step.',
+    updatedAt: '2026-06-12',
+  },
+]
+
+export const faqs: Faq[] = [
+  {
+    id: 1,
+    question: "What are your office hours?",
+    answer: "Our office is open from 9:00 AM to 6:00 PM, Monday through Friday."
+  },
+  {
+    id: 2,
+    question: "How can I contact you?",
+    answer: "You can reach us by phone at +1 (555) 123-4567 or by email at info@himaaus.com."
+  }
+];
+
