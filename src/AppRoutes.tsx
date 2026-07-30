@@ -67,7 +67,7 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/contacts" element={<ContactUsPage />} />
         <Route path="/blog-posts/all-posts" element={<AllPostsPage />} />
         <Route path="/blog-posts/new-post" element={<NewPostPage />} />
-        <Route path="/blog-posts/edit/:id" element={<EditPostPage />} />
+        <Route path="/blog-posts/edit/:id" element="" />
 
         <Route path="/partners/all-partners" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
         <Route path="/partners/add-partner" element={<PartnersProvider><AddPartnerPage /></PartnersProvider>} />
@@ -75,6 +75,7 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/testimonials/add-new" element={<TestimonialsProvider><AddTestimonialPage /></TestimonialsProvider>} />
         <Route path="/milestones/all-milestones" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
         <Route path="/milestones/add-milestone" element={<MilestonesProvider><AddMilestonePage /></MilestonesProvider>} />
+
 
         {/* Every other sidebar link still works as a real page — it just
             shows a simple "coming soon" placeholder until it's built. */}
