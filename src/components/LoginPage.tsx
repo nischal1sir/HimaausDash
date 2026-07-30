@@ -112,11 +112,6 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-
-        <p className="mt-4 text-center text-[12px] text-surface-muted">
-          Demo credentials: <span className="font-semibold">admin</span> /{' '}
-          <span className="font-semibold">himaaus2026</span>
-        </p>
       </div>
     </div>
   )

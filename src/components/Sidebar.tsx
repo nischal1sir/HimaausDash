@@ -3,9 +3,8 @@
 // In plain words, how this works now:
 //   - Each simple item (like "Overview" or "Director Message") is a real
 //     link — clicking it changes the URL and shows that page.
-//   - Items with a dropdown (like "Blog Posts") don't go anywhere by
-//     themselves; clicking them just opens/closes the list of sub-links
-//     underneath, and each sub-link is its own real page too.
+//   - Items with a dropdown (like "Blog Posts") have a chevron that toggles
+//     their submenu; clicking the label navigates to the parent's page.
 //   - We highlight whichever link matches the current URL, using React
 //     Router's useLocation() to read the address bar.
 
@@ -83,6 +82,7 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
                   {section.title}
                 </p>
               )}
+
               <ul className="space-y-0.5">
                 {section.items.map((item) => {
                   const itemPath = pathForItem(item.label)
@@ -90,33 +90,34 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
                   const isExpanded = expanded.has(item.label)
                   const Icon = item.icon
 
-                  // Items with a dropdown just expand/collapse — they don't
-                  // navigate anywhere themselves.
                   if (item.hasChildren) {
                     return (
                       <li key={item.label}>
-                        <button
-                          title={collapsed ? item.label : undefined}
-                          onClick={() => toggleExpanded(item.label)}
+                        <div
                           className={`group relative flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-[13.5px] font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-surface-heading ${
                             collapsed ? 'lg:justify-center lg:px-0 lg:py-2.5' : ''
                           }`}
                         >
-                          <span className={`flex items-center gap-2.5 ${collapsed ? 'lg:gap-0' : ''}`}>
-                            <Icon
-                              size={16.5}
-                              strokeWidth={2}
-                              className="text-slate-400 group-hover:text-slate-500"
-                            />
+                          {/* Clicking the label navigates to the parent route */}
+                          <Link
+                            to={itemPath}
+                            onClick={onNavigate}
+                            title={collapsed ? item.label : undefined}
+                            className={`flex items-center gap-2.5 ${collapsed ? 'lg:gap-0' : ''}`}
+                          >
+                            <Icon size={16.5} strokeWidth={2} className="text-slate-400 group-hover:text-slate-500" />
                             <span className={collapsed ? 'lg:hidden' : ''}>{item.label}</span>
-                          </span>
-                          <ChevronDown
-                            size={14}
-                            className={`transition-transform duration-150 ${collapsed ? 'lg:hidden' : ''} ${
-                              isExpanded ? 'rotate-180' : ''
-                            } text-slate-300`}
-                          />
-                        </button>
+                          </Link>
+
+                          {/* Chevron toggles submenu */}
+                          <button
+                            onClick={() => toggleExpanded(item.label)}
+                            aria-label={`Toggle ${item.label} submenu`}
+                            className={`${collapsed ? 'lg:hidden' : ''} p-1 rounded-md text-slate-300 hover:text-slate-500`}
+                          >
+                            <ChevronDown size={14} className={`transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`} />
+                          </button>
+                        </div>
 
                         {item.subItems && (
                           <div
@@ -166,11 +167,7 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
                             : 'text-slate-600 hover:bg-slate-50 hover:text-surface-heading'
                         }`}
                       >
-                        <Icon
-                          size={16.5}
-                          strokeWidth={2}
-                          className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'}
-                        />
+                        <Icon size={16.5} strokeWidth={2} className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'} />
                         <span className={collapsed ? 'lg:hidden' : ''}>{item.label}</span>
                       </Link>
                     </li>

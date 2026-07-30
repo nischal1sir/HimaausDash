@@ -88,3 +88,7 @@ export interface TeamMember {
 }
 
 
+export interface FAQItem {
+  question: string
+  answer: string
+}

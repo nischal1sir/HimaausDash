@@ -1,32 +1,48 @@
-// The top of the app. In plain words, what happens here:
-//   - If the person isn't logged in yet, show the login page — no matter
-//     what page they typed into the address bar.
-//   - Once logged in, hand off to AppRoutes.tsx, which decides which page
-//     to show based on the current URL.
+import { Route, Routes } from 'react-router-dom'
 
-import { useState } from 'react'
-import LoginPage from './components/LoginPage'
-import AppRoutes from './AppRoutes'
-import { AUTH_STORAGE_KEY } from './authConfig'
+import DashboardLayout from './layouts/DashboardLayout'
+import OverviewPage from './components/OverviewPage'
+import DirectorMessagePage from './components/DirectorMessage'
+import PlaceholderPage from './components/PlaceholderPage'
 
-export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    () => localStorage.getItem(AUTH_STORAGE_KEY) === 'true'
-  )
+import FAQPage from './pages/FAQ';
+import NoticePage from './pages/Notice'
 
-  function handleLoginSuccess() {
-    localStorage.setItem(AUTH_STORAGE_KEY, 'true')
-    setIsAuthenticated(true)
-  }
+import { navSections } from './data'
+import { buildRouteList } from './lib/routes'
 
-  function handleLogout() {
-    localStorage.removeItem(AUTH_STORAGE_KEY)
-    setIsAuthenticated(false)
-  }
+const allRoutes = buildRouteList(navSections)
 
-  if (!isAuthenticated) {
-    return <LoginPage onSuccess={handleLoginSuccess} />
-  }
+const builtInPaths = new Set([
+  '/',
+  '/director-message',
+  '/faq',
+  '/notice',
+])
 
-  return <AppRoutes onLogout={handleLogout} />
+interface AppRoutesProps {
+  onLogout: () => void
 }
+
+export default function AppRoutes({ onLogout }: AppRoutesProps) {
+  return (
+    <Routes>
+      <Route element={<DashboardLayout onLogout={onLogout} />}>
+        <Route path="/" element={<OverviewPage />} />
+        <Route path="/director-message" element={<DirectorMessagePage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/notice" element={<NoticePage />} />
+
+        {allRoutes
+          .filter((route) => !builtInPaths.has(route.path))
+          .map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={<PlaceholderPage title={route.label} />}
+            />
+          ))}
+      </Route>
+    </Routes>
+  )
+}AppRoutes
