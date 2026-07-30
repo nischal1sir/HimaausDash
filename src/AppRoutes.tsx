@@ -18,6 +18,17 @@ import ContactUsPage from './components/Contact-us/ContactUsPage'
 import AllPostsPage from './pages/blog/AllPostsPage'
 import NewPostPage from './pages/blog/NewPostPage'
 import EditPostPage from './pages/blog/EditPostPage'
+import {
+  PartnersProvider,
+  PartnersPage,
+  AddPartnerPage,
+  TestimonialsProvider,
+  TestimonialsPage,
+  AddTestimonialPage,
+  MilestonesProvider,
+  MilestonesPage,
+  AddMilestonePage,
+} from './features/testimonials-partners'
 
 // Every sidebar link, turned into a { path, label } pair.
 const allRoutes = buildRouteList(navSections)
@@ -31,6 +42,12 @@ const builtInPaths = new Set([
   '/podcast/add-episode',
   '/blog-posts/all-posts',
   '/blog-posts/new-post',
+  '/partners/all-partners',
+  '/partners/add-partner',
+  '/testimonials/all-testimonials',
+  '/testimonials/add-new',
+  '/milestones/all-milestones',
+  '/milestones/add-milestone',
 ])
 
 interface AppRoutesProps {
@@ -51,6 +68,13 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/blog-posts/all-posts" element={<AllPostsPage />} />
         <Route path="/blog-posts/new-post" element={<NewPostPage />} />
         <Route path="/blog-posts/edit/:id" element={<EditPostPage />} />
+
+        <Route path="/partners/all-partners" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
+        <Route path="/partners/add-partner" element={<PartnersProvider><AddPartnerPage /></PartnersProvider>} />
+        <Route path="/testimonials/all-testimonials" element={<TestimonialsProvider><TestimonialsPage /></TestimonialsProvider>} />
+        <Route path="/testimonials/add-new" element={<TestimonialsProvider><AddTestimonialPage /></TestimonialsProvider>} />
+        <Route path="/milestones/all-milestones" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
+        <Route path="/milestones/add-milestone" element={<MilestonesProvider><AddMilestonePage /></MilestonesProvider>} />
 
         {/* Every other sidebar link still works as a real page — it just
             shows a simple "coming soon" placeholder until it's built. */}
