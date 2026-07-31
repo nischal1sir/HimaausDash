@@ -22,6 +22,10 @@ import ContactUsPage from './components/Contact-us/ContactUsPage'
 import AllPostsPage from './pages/blog/AllPostsPage'
 import NewPostPage from './pages/blog/NewPostPage'
 import EditPostPage from './pages/blog/EditPostPage'
+import AllFAQsPage from './pages/faq/AllFAQsPage'
+import AddFAQPage from './pages/faq/AddFAQPage'
+import AllNoticesPage from './pages/notice/AllNoticesPage'
+import AddNoticePage from './pages/notice/AddNoticePage'
 import {
   PartnersProvider,
   PartnersPage,
@@ -56,8 +60,10 @@ const builtInPaths = new Set([
   '/eligibility/criteria',
   '/team-profiles/all-members',
   '/team-profiles/add-member',
-  '/team-profiles/edit-member', // will treat base prefix as built-in too if needed, but the router matches exact
-])
+  '/team-profiles/edit-member', // will treat base prefix as built-in too if needed, but the router matches exact  '/faq/all-faqs',
+  '/faq/add-faq',
+  '/notice/all-notices',
+  '/notice/add-notice',])
 
 interface AppRoutesProps {
   onLogout: () => void
@@ -83,6 +89,10 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/testimonials/add-new" element={<TestimonialsProvider><AddTestimonialPage /></TestimonialsProvider>} />
         <Route path="/milestones/all-milestones" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
         <Route path="/milestones/add-milestone" element={<MilestonesProvider><AddMilestonePage /></MilestonesProvider>} />
+        <Route path="/faq/all-faqs" element={<AllFAQsPage />} />
+        <Route path="/faq/add-faq" element={<AddFAQPage />} />
+        <Route path="/notice/all-notices" element={<AllNoticesPage />} />
+        <Route path="/notice/add-notice" element={<AddNoticePage />} />
 
         <Route path="/eligibility/submissions" element={<EligibilitySubmissionsPage />} />
         <Route path="/eligibility/criteria" element={<EligibilityCriteriaPage />} />

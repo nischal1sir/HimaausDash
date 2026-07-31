@@ -1,13 +1,3 @@
-// Left-hand navigation menu.
-//
-// In plain words, how this works now:
-//   - Each simple item (like "Overview" or "Director Message") is a real
-//     link — clicking it changes the URL and shows that page.
-//   - Items with a dropdown (like "Blog Posts") have a chevron that toggles
-//     their submenu; clicking the label navigates to the parent's page.
-//   - We highlight whichever link matches the current URL, using React
-//     Router's useLocation() to read the address bar.
-
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronDown, GraduationCap, X } from 'lucide-react'

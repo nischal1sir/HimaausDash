@@ -106,8 +106,15 @@ export interface TeamMember {
   isActive: boolean
 }
 
-
 export interface FAQItem {
+  id: string
   question: string
   answer: string
+}
+
+export interface NoticeItem {
+  id: string
+  title: string
+  description: string
+  createdAt: string
 }
