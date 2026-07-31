@@ -65,6 +65,7 @@ export interface BlogPost {
   image: string
   status: 'draft' | 'published'
   date: string
+}
 export interface EligibilitySubmission {
   id: string
   studentName: string
