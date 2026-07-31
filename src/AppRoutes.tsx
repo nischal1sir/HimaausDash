@@ -10,6 +10,10 @@ import OverviewPage from './pages/OverviewPage'
 import DirectorMessagePage from './pages/DirectorMessagePage'
 import AllEpisodesPage from './pages/podcast/AllEpisodesPage'
 import AddEpisodePage from './pages/podcast/AddEpisodePage'
+import EligibilitySubmissionsPage from './components/EligibilitySubmissions'
+import EligibilityCriteriaPage from './components/EligibilityCriteria'
+import TeamMembersList from './components/TeamMembersList'
+import TeamMemberForm from './components/TeamMemberForm'
 import PlaceholderPage from './pages/PlaceholderPage'
 import { navSections } from './data'
 import { buildRouteList } from './lib/routes'
@@ -48,6 +52,11 @@ const builtInPaths = new Set([
   '/testimonials/add-new',
   '/milestones/all-milestones',
   '/milestones/add-milestone',
+  '/eligibility/submissions',
+  '/eligibility/criteria',
+  '/team-profiles/all-members',
+  '/team-profiles/add-member',
+  '/team-profiles/edit-member', // will treat base prefix as built-in too if needed, but the router matches exact
 ])
 
 interface AppRoutesProps {
@@ -75,6 +84,11 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/milestones/all-milestones" element={<MilestonesProvider><MilestonesPage /></MilestonesProvider>} />
         <Route path="/milestones/add-milestone" element={<MilestonesProvider><AddMilestonePage /></MilestonesProvider>} />
 
+        <Route path="/eligibility/submissions" element={<EligibilitySubmissionsPage />} />
+        <Route path="/eligibility/criteria" element={<EligibilityCriteriaPage />} />
+        <Route path="/team-profiles/all-members" element={<TeamMembersList />} />
+        <Route path="/team-profiles/add-member" element={<TeamMemberForm />} />
+        <Route path="/team-profiles/edit-member/:id" element={<TeamMemberForm />} />
 
         {/* Every other sidebar link still works as a real page — it just
             shows a simple "coming soon" placeholder until it's built. */}

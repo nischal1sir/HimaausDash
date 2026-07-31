@@ -65,4 +65,48 @@ export interface BlogPost {
   image: string
   status: 'draft' | 'published'
   date: string
+export interface EligibilitySubmission {
+  id: string
+  studentName: string
+  email: string
+  phone: string
+  destinationCountry: string
+  highestQualification: string
+  gpaOrPercentage: string
+  englishTest: string
+  englishScore: string
+  status: 'Pending' | 'Approved' | 'Rejected'
+  submittedAt: string
+}
+
+export interface EligibilityCriteria {
+  id: string
+  country: string
+  minGPA: string
+  englishTestRequirements: {
+    test: string
+    minScore: string
+  }[]
+  requiredDocuments: string[]
+  isActive: boolean
+  lastUpdated: string
+}
+
+export interface TeamMember {
+  id: string
+  name: string
+  role: string
+  department: string
+  email: string
+  phone: string
+  bio: string
+  linkedinUrl?: string
+  imageSrc?: string
+  isActive: boolean
+}
+
+
+export interface FAQItem {
+  question: string
+  answer: string
 }

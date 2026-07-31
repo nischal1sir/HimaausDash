@@ -3,9 +3,8 @@
 // In plain words, how this works now:
 //   - Each simple item (like "Overview" or "Director Message") is a real
 //     link — clicking it changes the URL and shows that page.
-//   - Items with a dropdown (like "Blog Posts") don't go anywhere by
-//     themselves; clicking them just opens/closes the list of sub-links
-//     underneath, and each sub-link is its own real page too.
+//   - Items with a dropdown (like "Blog Posts") have a chevron that toggles
+//     their submenu; clicking the label navigates to the parent's page.
 //   - We highlight whichever link matches the current URL, using React
 //     Router's useLocation() to read the address bar.
 
@@ -83,6 +82,7 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
                   {section.title}
                 </p>
               )}
+
               <ul className="space-y-0.5">
                 {section.items.map((item) => {
                   const itemPath = pathForItem(item.label)
@@ -194,11 +194,7 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
                             : 'text-slate-600 hover:bg-slate-50 hover:text-surface-heading'
                         }`}
                       >
-                        <Icon
-                          size={16.5}
-                          strokeWidth={2}
-                          className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'}
-                        />
+                        <Icon size={16.5} strokeWidth={2} className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'} />
                         <span className={collapsed ? 'lg:hidden' : ''}>{item.label}</span>
                       </Link>
                     </li>
