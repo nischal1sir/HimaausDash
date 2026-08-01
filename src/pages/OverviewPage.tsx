@@ -6,9 +6,11 @@ import StatCard from '../components/StatCard'
 import ApplicationsChart from '../components/charts/ApplicationsChart'
 import CountryDistribution from '../components/charts/CountryDistribution'
 import StatisticsChart from '../components/charts/StatisticsChart'
-import { statCards } from '../data'
+import { getDashboardStats } from '../lib/dashboardStats'
 
 export default function OverviewPage() {
+  const statCards = getDashboardStats()
+
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-4 sm:space-y-5">
       {/* Stat cards */}
