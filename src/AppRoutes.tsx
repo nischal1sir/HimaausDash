@@ -26,6 +26,11 @@ import AllFAQsPage from './pages/faq/AllFAQsPage'
 import AddFAQPage from './pages/faq/AddFAQPage'
 import AllNoticesPage from './pages/notice/AllNoticesPage'
 import AddNoticePage from './pages/notice/AddNoticePage'
+import AllMediaPage from './pages/gallery/AllMediaPage'
+import UploadPage from './pages/gallery/UploadPage'
+import UpcomingEventsPage from './pages/events/UpcomingEventsPage'
+import PastEventsPage from './pages/events/PastEventsPage'
+import AddEventPage from './pages/events/AddEventPage'
 import {
   PartnersProvider,
   PartnersPage,
@@ -50,6 +55,7 @@ const builtInPaths = new Set([
   '/podcast/add-episode',
   '/blog-posts/all-posts',
   '/blog-posts/new-post',
+  '/blog-posts/edit',
   '/partners/all-partners',
   '/partners/add-partner',
   '/testimonials/all-testimonials',
@@ -63,7 +69,18 @@ const builtInPaths = new Set([
   '/team-profiles/edit-member', // will treat base prefix as built-in too if needed, but the router matches exact  '/faq/all-faqs',
   '/faq/add-faq',
   '/notice/all-notices',
-  '/notice/add-notice',])
+  '/notice/add-notice',
+  '/team-profiles/edit-member',
+  '/faq/all-faqs',
+  '/faq/add-faq',
+  '/notice/all-notices',
+  '/notice/add-notice',
+  '/gallery/all-media',
+  '/gallery/upload',
+  '/events/upcoming',
+  '/events/past-events',
+  '/events/add-event',
+])
 
 interface AppRoutesProps {
   onLogout: () => void
@@ -83,6 +100,12 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/blog-posts/all-posts" element={<AllPostsPage />} />
         <Route path="/blog-posts/new-post" element={<NewPostPage />} />
         <Route path="/blog-posts/edit/:id" element="" />
+        <Route path="/blog-posts/edit/:id" element={<EditPostPage />} />
+        <Route path="/gallery/all-media" element={<AllMediaPage />} />
+        <Route path="/gallery/upload" element={<UploadPage />} />
+        <Route path="/events/upcoming" element={<UpcomingEventsPage />} />
+        <Route path="/events/past-events" element={<PastEventsPage />} />
+        <Route path="/events/add-event" element={<AddEventPage />} />
         <Route path="/partners/all-partners" element={<PartnersProvider><PartnersPage /></PartnersProvider>} />
         <Route path="/partners/add-partner" element={<PartnersProvider><AddPartnerPage /></PartnersProvider>} />
         <Route path="/testimonials/all-testimonials" element={<TestimonialsProvider><TestimonialsPage /></TestimonialsProvider>} />

@@ -118,3 +118,21 @@ export interface NoticeItem {
   description: string
   createdAt: string
 }
+
+export interface GalleryItem {
+  id: string
+  title: string
+  category: string
+  imageUrl: string
+  uploadedAt: string
+}
+
+export interface EventItem {
+  id: string
+  title: string
+  description: string
+  date: string // YYYY-MM-DD
+  location: string
+  imageUrl: string | null
+  createdAt: string
+}
