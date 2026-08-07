@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Eye, EyeOff, Lock, User } from 'lucide-react'
 import { AUTH_CREDENTIALS } from '../authConfig'
+import logo from "../assets/image/download.png"
+import loginBg from "../assets/image/photo.webp"
 
 interface LoginPageProps {
   onSuccess: () => void
@@ -33,86 +35,132 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface-bg px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-6 flex flex-col items-center gap-2 text-center">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl2 bg-gradient-to-br from-brand-400 to-brand-600 text-lg font-bold text-white shadow-card">
-            H
-          </div>
-          <h1 className="text-lg font-bold text-surface-heading">Himaaus Dashboard</h1>
-          <p className="text-[13px] text-surface-muted">Sign in to continue</p>
+  <div className="min-h-screen grid lg:grid-cols-2 bg-slate-100">
+
+    {/* Left Side */}
+    <div className="relative hidden lg:flex items-center justify-center overflow-hidden"
+    style={{
+    backgroundImage: `url(${loginBg})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",}}>
+
+      <div className="absolute inset-0 bg-blue-900/70"></div>
+
+      <div className="relative z-10 max-w-md px-10 text-white">
+        <h1 className="text-5xl font-bold leading-tight">
+          Your Journey
+          <br />
+          Starts Here
+        </h1>
+
+        <p className="mt-6 text-lg text-blue-100 leading-8">
+          Manage students, appointments, visa services, blogs and content
+          from one modern dashboard.
+        </p>
+      </div>
+    </div>
+
+    {/* Right Side */}
+    <div className="flex items-center justify-center p-8">
+
+      <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-2xl">
+
+        <div className="text-center">
+
+          <img
+            src={logo}
+            alt="Himaaus"
+            className="mx-auto w-40"
+          />
+
+          <h2 className="mt-6 text-3xl font-bold text-slate-800">
+            Welcome Back
+          </h2>
+
+          <p className="mt-2 text-slate-500">
+            Sign in to continue to your dashboard.
+          </p>
+
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-xl2 border border-surface-border bg-surface-card p-6 shadow-card"
-        >
-          <div className="space-y-4">
-            <label className="block">
-              <span className="mb-1.5 block text-[13px] font-semibold text-surface-heading">
-                Username
-              </span>
-              <span className="relative block">
-                <User
-                  size={16}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-                <input
-                  type="text"
-                  autoComplete="username"
-                  autoFocus
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin"
-                  className="w-full rounded-lg border border-surface-border bg-slate-50/70 py-2 pl-9 pr-3 text-[13px] text-slate-700 placeholder:text-slate-400 outline-none transition-colors focus:border-brand-400 focus:bg-white focus:ring-2 focus:ring-brand-100"
-                />
-              </span>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+
+          <div>
+            <label className="mb-2 block font-medium text-slate-700">
+              Username
             </label>
 
-            <label className="block">
-              <span className="mb-1.5 block text-[13px] font-semibold text-surface-heading">
-                Password
-              </span>
-              <span className="relative block">
-                <Lock
-                  size={16}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-surface-border bg-slate-50/70 py-2 pl-9 pr-9 text-[13px] text-slate-700 placeholder:text-slate-400 outline-none transition-colors focus:border-brand-400 focus:bg-white focus:ring-2 focus:ring-brand-100"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </span>
+            <div className="relative">
+
+              <User
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter username"
+                className="w-full rounded-xl border border-slate-300 py-3 pl-12 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+
+            </div>
+          </div>
+
+          <div>
+
+            <label className="mb-2 block font-medium text-slate-700">
+              Password
             </label>
+
+            <div className="relative">
+
+              <Lock
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full rounded-xl border border-slate-300 py-3 pl-12 pr-12 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+
+            </div>
+
           </div>
 
           {error && (
-            <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-[12.5px] font-medium text-rose-600">
+            <div className="rounded-xl bg-red-50 p-3 text-sm text-red-600">
               {error}
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="mt-5 w-full rounded-lg bg-brand-600 py-2.5 text-[13.5px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 py-3 font-semibold text-white transition hover:scale-[1.02] hover:shadow-lg disabled:opacity-70"
           >
-            {submitting ? 'Signing in…' : 'Sign in'}
+            {submitting ? "Signing in..." : "Sign In"}
           </button>
+
         </form>
+
       </div>
+
     </div>
-  )
+
+  </div>
+)
 }
