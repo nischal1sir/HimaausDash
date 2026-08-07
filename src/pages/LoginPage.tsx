@@ -35,10 +35,10 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
   }
 
   return (
-  <div className="min-h-screen grid lg:grid-cols-2 bg-slate-100">
+  <div className="min-h-screen lg:grid lg:grid-cols-5 bg-slate-100">
 
     {/* Left Side */}
-    <div className="relative hidden lg:flex items-center justify-center overflow-hidden"
+    <div className="relative hidden lg:col-span-2 lg:flex items-center justify-center overflow-hidden"
     style={{
     backgroundImage: `url(${loginBg})`,
     backgroundSize: "cover",
@@ -61,7 +61,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
     </div>
 
     {/* Right Side */}
-    <div className="flex items-center justify-center p-8">
+    <div className="flex lg:col-span-3 items-center justify-center p-10">
 
       <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-2xl">
 
