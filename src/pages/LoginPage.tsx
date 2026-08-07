@@ -63,7 +63,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
     {/* Right Side */}
     <div className="flex lg:col-span-3 items-center justify-center p-10">
 
-      <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-2xl">
+      <div className="w-full max-w-md">
 
         <div className="text-center">
 
