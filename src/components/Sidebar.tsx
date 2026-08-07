@@ -194,14 +194,6 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
             </div>
           ))}
         </nav>
-
-        {/* Footer */}
-        <div className={`shrink-0 border-t border-surface-border p-3 ${collapsed ? 'lg:hidden' : ''}`}>
-          <div className="rounded-lg bg-slate-50 px-3 py-2.5 text-[11.5px] text-slate-400">
-            <p className="font-semibold text-slate-500">v1.0.0</p>
-            <p>Frontend build</p>
-          </div>
-        </div>
       </aside>
     </>
   )
