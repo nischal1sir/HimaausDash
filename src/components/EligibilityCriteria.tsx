@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Pencil, Plus, Trash2, X, PlusCircle, Check, HelpCircle } from 'lucide-react'
+import { Pencil, Plus, Trash2, X, PlusCircle, Check } from 'lucide-react'
 import type { EligibilityCriteria } from '../types'
 import { eligibilityCriteria as initialCriteria } from '../data'
 

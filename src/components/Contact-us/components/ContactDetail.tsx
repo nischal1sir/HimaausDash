@@ -1,4 +1,4 @@
-import { MapPin, Mail, Tag, Phone, MessageSquare, ArrowLeft } from 'lucide-react'
+import { MapPin, Mail, Phone, MessageSquare, ArrowLeft } from 'lucide-react'
 import { Archive } from 'lucide-react'
 import { initials, subjectClassName } from '../data'
 import type { Contact } from '../types'

@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import type { Contact, ContactFormData, InquirySubject } from '../types'
+import type { Contact, ContactFormData } from '../types'
 import { INQUIRY_SUBJECTS } from '../types'
 
 interface Props {
