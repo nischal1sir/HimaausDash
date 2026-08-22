@@ -2,7 +2,8 @@
 // just a contentEditable div plus document.execCommand for basic formatting.
 // Good enough for blog body copy without pulling in a heavy dependency.
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
+import DOMPurify from 'dompurify'
 import {
   Bold,
   Italic,
@@ -45,15 +46,43 @@ const TOOLBAR_BUTTONS: Array<{ icon: typeof Bold; command: string; label: string
 export default function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null)
 
+  // Sanitize HTML on value change to prevent XSS
+  useEffect(() => {
+    if (editorRef.current) {
+      const sanitized = DOMPurify.sanitize(value, {
+        ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'blockquote', 'ul', 'ol', 'li', 'p', 'br', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'code', 'pre'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
+      })
+      if (editorRef.current.innerHTML !== sanitized) {
+        editorRef.current.innerHTML = sanitized
+      }
+    }
+  }, [value])
+
   function runCommand(command: string, arg?: string) {
     editorRef.current?.focus()
     document.execCommand(command, false, arg)
-    if (editorRef.current) onChange(editorRef.current.innerHTML)
+    if (editorRef.current) {
+      const sanitized = DOMPurify.sanitize(editorRef.current.innerHTML, {
+        ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'blockquote', 'ul', 'ol', 'li', 'p', 'br', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'code', 'pre'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
+      })
+      onChange(sanitized)
+    }
   }
 
   function insertLink() {
     const url = window.prompt('Enter a URL')
     if (url) runCommand('createLink', url)
+  }
+
+  function handleInput(e: React.FormEvent<HTMLDivElement>) {
+    const html = e.currentTarget.innerHTML
+    const sanitized = DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'blockquote', 'ul', 'ol', 'li', 'p', 'br', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'code', 'pre'],
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
+    })
+    onChange(sanitized)
   }
 
   return (
@@ -84,7 +113,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         ref={editorRef}
         contentEditable
         suppressContentEditableWarning
-        onInput={(e) => onChange(e.currentTarget.innerHTML)}
+        onInput={handleInput}
         data-placeholder={placeholder}
         dangerouslySetInnerHTML={{ __html: value }}
         className="min-h-[220px] w-full px-3.5 py-3 text-[13px] leading-relaxed text-slate-700 outline-none [&:empty]:before:text-slate-400 [&:empty]:before:content-[attr(data-placeholder)]"
