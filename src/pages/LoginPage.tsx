@@ -15,7 +15,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
     setSubmitting(true)
@@ -33,6 +33,35 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
       }
     }, 300)
   }
+
+  // TODO: Replace with backend authentication
+  // Example integration with a backend API:
+  // async function handleSubmit(e: FormEvent) {
+  //   e.preventDefault()
+  //   setError('')
+  //   setSubmitting(true)
+  //
+  //   try {
+  //     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/login`, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ username, password })
+  //     })
+  //
+  //     if (response.ok) {
+  //       const { token, user } = await response.json()
+  //       localStorage.setItem('auth_token', token)
+  //       localStorage.setItem('auth_user', JSON.stringify(user))
+  //       onSuccess()
+  //     } else {
+  //       setError('Incorrect username or password.')
+  //     }
+  //   } catch {
+  //     setError('Authentication service unavailable. Please try again later.')
+  //   } finally {
+  //     setSubmitting(false)
+  //   }
+  // }
 
   return (
   <div className="min-h-screen lg:grid lg:grid-cols-5 bg-slate-100">

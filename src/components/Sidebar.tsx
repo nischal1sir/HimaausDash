@@ -104,6 +104,7 @@ export default function Sidebar({ open, onClose, onNavigate, collapsed }: Sideba
                           <Link
                             to={firstSubPath}
                             onClick={(e) => {
+                              e.preventDefault()
                               if (!isExpanded) {
                                 toggleExpanded(item.label)
                               }

@@ -66,10 +66,6 @@ const builtInPaths = new Set([
   '/eligibility/criteria',
   '/team-profiles/all-members',
   '/team-profiles/add-member',
-  '/team-profiles/edit-member', // will treat base prefix as built-in too if needed, but the router matches exact  '/faq/all-faqs',
-  '/faq/add-faq',
-  '/notice/all-notices',
-  '/notice/add-notice',
   '/team-profiles/edit-member',
   '/faq/all-faqs',
   '/faq/add-faq',
@@ -99,7 +95,6 @@ export default function AppRoutes({ onLogout }: AppRoutesProps) {
         <Route path="/contacts" element={<ContactUsPage />} />
         <Route path="/blog-posts/all-posts" element={<AllPostsPage />} />
         <Route path="/blog-posts/new-post" element={<NewPostPage />} />
-        <Route path="/blog-posts/edit/:id" element="" />
         <Route path="/blog-posts/edit/:id" element={<EditPostPage />} />
         <Route path="/gallery/all-media" element={<AllMediaPage />} />
         <Route path="/gallery/upload" element={<UploadPage />} />

@@ -7,8 +7,8 @@
 // (Supabase, Firebase Auth, Auth0, your own API, etc.) instead.
 
 export const AUTH_CREDENTIALS = {
-  username: 'admin',
-  password: 'himaaus2026',
+  username: import.meta.env['VITE_AUTH_USERNAME'] || 'admin',
+  password: import.meta.env['VITE_AUTH_PASSWORD'] || 'himaaus2026',
 }
 
 export const AUTH_STORAGE_KEY = 'himaaus-dash-auth'

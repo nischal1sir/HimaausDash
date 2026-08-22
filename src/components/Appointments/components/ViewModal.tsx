@@ -1,4 +1,4 @@
-import { X, MapPin, Mail, Phone, GraduationCap, BookOpen, FlaskConical, MessageSquare } from 'lucide-react'
+import { X, MapPin, GraduationCap, FlaskConical, MessageSquare } from 'lucide-react'
 import type { Applicant } from '../types'
 
 interface Props {

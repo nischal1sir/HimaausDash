@@ -1,4 +1,4 @@
-import { Bell, Menu, PanelLeft, Search } from 'lucide-react'
+import { Menu, PanelLeft } from 'lucide-react'
 
 interface TopbarProps {
   title: string

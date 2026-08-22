@@ -1,4 +1,4 @@
-import { Eye, Pencil, Trash2, CheckCircle2 } from 'lucide-react'
+import { Eye, Pencil, Trash2 } from 'lucide-react'
 import type { Applicant, Status } from '../types'
 import Pagination from './Pagination'
 
