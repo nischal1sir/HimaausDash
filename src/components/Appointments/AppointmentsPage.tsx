@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 
 /* ───────── Types ───────── */
 import type { Applicant, Status } from './types'
@@ -15,9 +15,21 @@ import ViewModal from './components/ViewModal'
 import DeleteConfirmModal from './components/DeleteConfirmModal'
 
 const ITEMS_PER_PAGE = 6
+const APPOINTMENTS_STORAGE_KEY = 'himaaus-appointments'
 
 export default function AppointmentsPage() {
-  const [applicants, setApplicants] = useState<Applicant[]>(initialApplicants)
+  const [applicants, setApplicants] = useState<Applicant[]>(() => {
+    try {
+      const stored = localStorage.getItem(APPOINTMENTS_STORAGE_KEY)
+      return stored ? JSON.parse(stored) : initialApplicants
+    } catch {
+      return initialApplicants
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(applicants))
+  }, [applicants])
   const [activeFilter, setActiveFilter] = useState<string>('All')
   const [selectedCountry, setSelectedCountry] = useState<string>('All')
   const [currentPage, setCurrentPage] = useState(1)
@@ -47,7 +59,6 @@ export default function AppointmentsPage() {
     })
   }, [applicants, activeFilter, selectedCountry])
 
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
   const pageItems = filtered.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE

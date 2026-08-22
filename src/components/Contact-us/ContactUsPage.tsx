@@ -9,8 +9,21 @@ import ContactDetail from './components/ContactDetail'
 import AddContactModal from './components/AddContactModal'
 import DeleteConfirmModal from './components/DeleteConfirmModal'
 
+const CONTACTS_STORAGE_KEY = 'himaaus-contacts'
+
 export default function ContactUsPage() {
-  const [contacts, setContacts] = useState<Contact[]>(initialContacts)
+  const [contacts, setContacts] = useState<Contact[]>(() => {
+    try {
+      const stored = localStorage.getItem(CONTACTS_STORAGE_KEY)
+      return stored ? JSON.parse(stored) : initialContacts
+    } catch {
+      return initialContacts
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem(CONTACTS_STORAGE_KEY, JSON.stringify(contacts))
+  }, [contacts])
   const [selectedId, setSelectedId] = useState<number | null>(
     initialContacts[0]?.id ?? null
   )
