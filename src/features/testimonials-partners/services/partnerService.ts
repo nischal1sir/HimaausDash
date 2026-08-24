@@ -1,37 +1,62 @@
 import { partnersData } from "../data/dummyData";
 import type { Partner, PartnerFormValues } from "../types/partner";
 
-/**
- * Simulated backend for Partners. Swap the internals for real `fetch` calls
- * when an API is available — hooks/usePartners.ts is the only caller.
- */
-let partners: Partner[] = [...partnersData];
+const STORAGE_KEY = "himaaus-dash-partners";
 
-function delay<T>(value: T, ms = 500): Promise<T> {
+function loadPartners(): Partner[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(partnersData));
+      return partnersData;
+    }
+    return JSON.parse(raw) as Partner[];
+  } catch (error) {
+    console.error("Failed to read partners from localStorage", error);
+    return partnersData;
+  }
+}
+
+function savePartners(partners: Partner[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(partners));
+  } catch (error) {
+    console.error("Failed to save partners to localStorage", error);
+  }
+}
+
+function delay<T>(value: T, ms = 300): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
 export async function getAllPartners(): Promise<Partner[]> {
-  return delay([...partners]);
+  return delay(loadPartners());
 }
 
 export async function createPartner(values: PartnerFormValues): Promise<Partner> {
+  const partners = loadPartners();
   const newPartner: Partner = {
     ...values,
     id: `ptn_${Date.now()}`,
     createdAt: new Date().toISOString(),
   };
-  partners = [newPartner, ...partners];
+  const updated = [newPartner, ...partners];
+  savePartners(updated);
   return delay(newPartner);
 }
 
 export async function updatePartner(id: string, values: PartnerFormValues): Promise<Partner> {
-  partners = partners.map((p) => (p.id === id ? { ...p, ...values } : p));
-  const updated = partners.find((p) => p.id === id)!;
-  return delay(updated);
+  const partners = loadPartners();
+  const updated = partners.map((p) => (p.id === id ? { ...p, ...values } : p));
+  savePartners(updated);
+  const updatedItem = updated.find((p) => p.id === id)!;
+  return delay(updatedItem);
 }
 
 export async function deletePartner(id: string): Promise<void> {
-  partners = partners.filter((p) => p.id !== id);
+  const partners = loadPartners();
+  const updated = partners.filter((p) => p.id !== id);
+  savePartners(updated);
   return delay(undefined);
 }
+
