@@ -1,65 +1,25 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import Sidebar from './components/Sidebar'
-import Topbar from './components/Topbar'
-import LoginPage from './components/LoginPage'
-import OverviewPage from './components/OverviewPage'
-import AppointmentsPage from './components/Appointments/AppointmentsPage'
-import ContactUsPage from './components/Contact-us/ContactUsPage'
+// The top of the app. In plain words, what happens here:
+//   - If the person isn't logged in yet, show the login page — no matter
+//     what page they typed into the address bar.
+//   - Once logged in, hand off to AppRoutes.tsx, which decides which page
+//     to show based on the current URL.
+
+import { useState, useEffect } from 'react'
+import LoginPage from './pages/LoginPage'
+import AppRoutes from './AppRoutes'
 import { AUTH_STORAGE_KEY } from './authConfig'
-
-function getTitleFromPath(pathname: string): string {
-  switch (pathname) {
-    case '/appointments':
-      return 'Appointments'
-    case '/contacts':
-      return 'Contact Us'
-    case '/':
-    default:
-      return 'Overview'
-  }
-}
-
-function MainLayout({ onLogout }: { onLogout: () => void }) {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
-  const location = useLocation()
-
-  const currentTitle = getTitleFromPath(location.pathname)
-
-  return (
-    <div className="flex min-h-screen bg-surface-bg">
-      <Sidebar
-        open={mobileSidebarOpen}
-        onClose={() => setMobileSidebarOpen(false)}
-        collapsed={collapsed}
-      />
-
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-        <Topbar
-          title={currentTitle}
-          userName="himaaus-edu"
-          onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
-          onToggleCollapse={() => setCollapsed((v) => !v)}
-          onLogout={onLogout}
-        />
-
-        <main className="flex-1 space-y-4 px-3.5 py-4 sm:space-y-5 sm:px-6 sm:py-6">
-          <Routes>
-            <Route path="/" element={<OverviewPage />} />
-            <Route path="/appointments" element={<AppointmentsPage />} />
-            <Route path="/contacts" element={<ContactUsPage />} />
-          </Routes>
-        </main>
-      </div>
-    </div>
-  )
-}
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { DashboardErrorBoundary } from './components/DashboardErrorBoundary'
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    () => localStorage.getItem(AUTH_STORAGE_KEY) === 'true'
-  )
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const auth = localStorage.getItem(AUTH_STORAGE_KEY)
+    setIsAuthenticated(auth === 'true')
+    setIsLoading(false)
+  }, [])
 
   function handleLoginSuccess() {
     localStorage.setItem(AUTH_STORAGE_KEY, 'true')
@@ -71,13 +31,28 @@ export default function App() {
     setIsAuthenticated(false)
   }
 
-  if (!isAuthenticated) {
-    return <LoginPage onSuccess={handleLoginSuccess} />
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-brand-600 border-t-transparent"></div>
+      </div>
+    )
   }
 
   return (
-    <BrowserRouter>
-      <MainLayout onLogout={handleLogout} />
-    </BrowserRouter>
+    <ErrorBoundary>
+      {!isAuthenticated ? (
+        <LoginPage onSuccess={handleLoginSuccess} />
+      ) : (
+        <DashboardErrorBoundary>
+          <AppRoutes onLogout={handleLogout} />
+        </DashboardErrorBoundary>
+      )}
+    </ErrorBoundary>
   )
 }
+
+
+
+
+
