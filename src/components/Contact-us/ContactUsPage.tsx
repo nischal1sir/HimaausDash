@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 
 import type { Contact, ContactFormData } from './types'
 import { initialContacts, createContactFromForm } from './data'
+import apiClient from '../../services/apiClient'
 
 import ContactHeader from './components/ContactHeader'
 import ContactList from './components/ContactList'
@@ -10,6 +11,22 @@ import AddContactModal from './components/AddContactModal'
 import DeleteConfirmModal from './components/DeleteConfirmModal'
 
 const CONTACTS_STORAGE_KEY = 'himaaus-contacts'
+
+function normalizeContact(item: any, index: number): Contact {
+  return {
+    id: typeof item.id === 'number' ? item.id : index + 1,
+    name: item.name || item.fullName || 'Contact Lead',
+    email: item.email || '',
+    phone: item.phone || '',
+    location: item.location || item.city || 'Kathmandu',
+    subject: item.subject || 'General Inquiry',
+    subjectDetail: item.subjectDetail || '',
+    message: item.message || item.comments || '',
+    createdAt: item.createdAt?.slice(0, 10) || item.receivedDate || new Date().toISOString().slice(0, 10),
+    isRead: Boolean(item.isRead),
+    isArchived: Boolean(item.isArchived),
+  }
+}
 
 export default function ContactUsPage() {
   const [contacts, setContacts] = useState<Contact[]>(() => {
@@ -22,8 +39,25 @@ export default function ContactUsPage() {
   })
 
   useEffect(() => {
+    async function loadContacts() {
+      try {
+        const data = await apiClient.get<any[]>('/contacts')
+        if (Array.isArray(data) && data.length > 0) {
+          const list = data.map((item, idx) => normalizeContact(item, idx))
+          setContacts(list)
+          localStorage.setItem(CONTACTS_STORAGE_KEY, JSON.stringify(list))
+        }
+      } catch (err) {
+        console.error('Failed to fetch contact leads from API:', err)
+      }
+    }
+    loadContacts()
+  }, [])
+
+  useEffect(() => {
     localStorage.setItem(CONTACTS_STORAGE_KEY, JSON.stringify(contacts))
   }, [contacts])
+
   const [selectedId, setSelectedId] = useState<number | null>(
     initialContacts[0]?.id ?? null
   )

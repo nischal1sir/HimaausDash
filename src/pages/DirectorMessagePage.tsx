@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Pencil, Plus, Trash2, X } from 'lucide-react'
 import type { DirectorMessage } from '../types'
 import { directorMessages as initialDirectorMessages } from '../data'
+import apiClient from '../services/apiClient'
 
 type FormState = {
   name: string
@@ -12,11 +13,15 @@ type FormState = {
 const EMPTY_FORM: FormState = { name: '', designation: '', message: '' }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
+  try {
+    return new Date(iso).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+  } catch {
+    return iso
+  }
 }
 
 export default function DirectorMessagePage() {
@@ -25,6 +30,32 @@ export default function DirectorMessagePage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadMessage() {
+      try {
+        const data = await apiClient.get<any>('/director-message')
+        if (data) {
+          const list = Array.isArray(data) ? data : [data]
+          setMessages(
+            list.map((m: any) => ({
+              id: m._id || m.id || 'dm-1',
+              name: m.name || m.directorName || 'Director',
+              designation: m.designation || m.title || 'Managing Director',
+              message: m.message || m.content || '',
+              updatedAt: m.updatedAt?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+            }))
+          )
+        }
+      } catch (err) {
+        console.error('Failed to load director message from API:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadMessage()
+  }, [])
 
   function openAddModal() {
     setEditingId(null)
@@ -42,9 +73,15 @@ export default function DirectorMessagePage() {
     setModalOpen(false)
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const today = new Date().toISOString().slice(0, 10)
+
+    try {
+      await apiClient.put('/director-message', form)
+    } catch (err) {
+      console.error('API call failed, updating local state:', err)
+    }
 
     if (editingId) {
       setMessages((prev) =>
@@ -61,14 +98,28 @@ export default function DirectorMessagePage() {
     setModalOpen(false)
   }
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (deleteId) {
+      try {
+        await apiClient.delete(`/director-message/${deleteId}`)
+      } catch (err) {
+        console.error('Delete via API failed:', err)
+      }
       setMessages((prev) => prev.filter((m) => m.id !== deleteId))
       setDeleteId(null)
     }
   }
 
   const isFormValid = form.name.trim() && form.designation.trim() && form.message.trim()
+
+
+  if (loading) {
+    return (
+      <div className="mx-auto w-full max-w-[1000px] flex items-center justify-center p-10">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-brand-600 border-t-transparent"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto w-full max-w-[1000px] space-y-4 sm:space-y-5">

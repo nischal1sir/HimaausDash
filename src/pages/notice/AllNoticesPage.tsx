@@ -1,14 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
-import { getNotices, deleteNotice } from '../../lib/noticeStore'
+import { getNotices, fetchNotices, deleteNotice } from '../../lib/noticeStore'
 import type { NoticeItem } from '../../types'
 
 export default function AllNoticesPage() {
   const [notices, setNotices] = useState<NoticeItem[]>(() => getNotices())
 
-  function handleDelete(id: string) {
-    setNotices(deleteNotice(id))
+  useEffect(() => {
+    async function load() {
+      const items = await fetchNotices()
+      setNotices(items)
+    }
+    load()
+  }, [])
+
+  async function handleDelete(id: string) {
+    const updated = await deleteNotice(id)
+    setNotices(updated)
   }
 
   return (

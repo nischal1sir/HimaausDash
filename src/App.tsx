@@ -16,8 +16,33 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const auth = localStorage.getItem(AUTH_STORAGE_KEY)
-    setIsAuthenticated(auth === 'true')
+    const token = localStorage.getItem('token') || localStorage.getItem('auth_token')
+    const authFlag = localStorage.getItem(AUTH_STORAGE_KEY)
+
+    if (token) {
+      try {
+        const payloadBase64 = token.split('.')[1]
+        if (payloadBase64) {
+          const payload = JSON.parse(atob(payloadBase64))
+          if (payload.exp && Date.now() >= payload.exp * 1000) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('auth_token')
+            localStorage.removeItem('auth_user')
+            localStorage.removeItem(AUTH_STORAGE_KEY)
+            setIsAuthenticated(false)
+            setIsLoading(false)
+            return
+          }
+        }
+      } catch {
+        // format ignored
+      }
+      setIsAuthenticated(true)
+    } else if (authFlag === 'true') {
+      setIsAuthenticated(true)
+    } else {
+      setIsAuthenticated(false)
+    }
     setIsLoading(false)
   }, [])
 
@@ -28,6 +53,9 @@ export default function App() {
 
   function handleLogout() {
     localStorage.removeItem(AUTH_STORAGE_KEY)
+    localStorage.removeItem('token')
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
     setIsAuthenticated(false)
   }
 

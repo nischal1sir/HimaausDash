@@ -1,4 +1,5 @@
 import type { NoticeItem } from '../types'
+import apiClient from '../services/apiClient'
 
 const STORAGE_KEY = 'himaaus-dash-notice-items'
 
@@ -17,6 +18,15 @@ const DEFAULT_NOTICES: NoticeItem[] = [
   },
 ]
 
+function normalizeNotice(item: any): NoticeItem {
+  return {
+    id: item._id || item.id || `notice-${Date.now()}`,
+    title: item.title || '',
+    description: item.description || '',
+    createdAt: item.createdAt?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+  }
+}
+
 export function getNotices(): NoticeItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -27,24 +37,53 @@ export function getNotices(): NoticeItem[] {
   }
 }
 
+export async function fetchNotices(): Promise<NoticeItem[]> {
+  try {
+    const data = await apiClient.get<any[]>('/notices')
+    if (Array.isArray(data)) {
+      const normalized = data.map(normalizeNotice)
+      saveNotices(normalized)
+      return normalized
+    }
+  } catch (err) {
+    console.error('Failed to fetch notices from API:', err)
+  }
+  return getNotices()
+}
+
 function saveNotices(items: NoticeItem[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
 }
 
-export function addNotice(title: string, description: string): NoticeItem[] {
-  const newNotice: NoticeItem = {
-    id: `notice-${Date.now()}`,
-    title,
-    description,
-    createdAt: new Date().toISOString().slice(0, 10),
+export async function addNotice(title: string, description: string): Promise<NoticeItem[]> {
+  try {
+    const created = await apiClient.post<any>('/notices', { title, description })
+    const newNotice = normalizeNotice(created)
+    const updated = [newNotice, ...getNotices()]
+    saveNotices(updated)
+    return updated
+  } catch (err) {
+    console.error('Failed to add notice via API:', err)
+    const newNotice: NoticeItem = {
+      id: `notice-${Date.now()}`,
+      title,
+      description,
+      createdAt: new Date().toISOString().slice(0, 10),
+    }
+    const updated = [newNotice, ...getNotices()]
+    saveNotices(updated)
+    return updated
   }
-  const updated = [newNotice, ...getNotices()]
-  saveNotices(updated)
-  return updated
 }
 
-export function deleteNotice(id: string): NoticeItem[] {
+export async function deleteNotice(id: string): Promise<NoticeItem[]> {
+  try {
+    await apiClient.delete(`/notices/${id}`)
+  } catch (err) {
+    console.error(`Failed to delete notice ${id} via API:`, err)
+  }
   const updated = getNotices().filter((item) => item.id !== id)
   saveNotices(updated)
   return updated
 }
+

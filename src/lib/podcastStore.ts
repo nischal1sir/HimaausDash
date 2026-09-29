@@ -11,10 +11,19 @@
 // only project — this lives in the visitor's own browser, not a server.)
 
 import type { PodcastEpisode } from '../types'
+import apiClient from '../services/apiClient'
 
 const STORAGE_KEY = 'himaaus-dash-podcast-episodes'
-
 const DEFAULT_EPISODES: PodcastEpisode[] = []
+
+function normalizeEpisode(item: any): PodcastEpisode {
+  return {
+    id: item._id || item.id || `ep-${Date.now()}`,
+    title: item.title || '',
+    videoUrl: item.videoUrl || item.url || item.youtubeUrl || '',
+    addedAt: item.addedAt || item.createdAt || new Date().toISOString(),
+  }
+}
 
 export function getEpisodes(): PodcastEpisode[] {
   try {
@@ -26,26 +35,53 @@ export function getEpisodes(): PodcastEpisode[] {
   }
 }
 
+export async function fetchEpisodes(): Promise<PodcastEpisode[]> {
+  try {
+    const data = await apiClient.get<any[]>('/podcasts')
+    if (Array.isArray(data)) {
+      const normalized = data.map(normalizeEpisode)
+      saveEpisodes(normalized)
+      return normalized
+    }
+  } catch (err) {
+    console.error('Failed to fetch podcasts from API:', err)
+  }
+  return getEpisodes()
+}
+
 function saveEpisodes(episodes: PodcastEpisode[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(episodes))
 }
 
-// Add a new episode to the front of the list and save it.
-export function addEpisode(title: string, videoUrl: string): PodcastEpisode[] {
-  const newEpisode: PodcastEpisode = {
-    id: `ep-${Date.now()}`,
-    title,
-    videoUrl,
-    addedAt: new Date().toISOString(),
+export async function addEpisode(title: string, videoUrl: string): Promise<PodcastEpisode[]> {
+  try {
+    const created = await apiClient.post<any>('/podcasts', { title, videoUrl })
+    const newEpisode = normalizeEpisode(created)
+    const updated = [newEpisode, ...getEpisodes()]
+    saveEpisodes(updated)
+    return updated
+  } catch (err) {
+    console.error('Failed to add podcast episode via API:', err)
+    const newEpisode: PodcastEpisode = {
+      id: `ep-${Date.now()}`,
+      title,
+      videoUrl,
+      addedAt: new Date().toISOString(),
+    }
+    const updated = [newEpisode, ...getEpisodes()]
+    saveEpisodes(updated)
+    return updated
   }
-  const updated = [newEpisode, ...getEpisodes()]
-  saveEpisodes(updated)
-  return updated
 }
 
-// Remove an episode by id and save it.
-export function deleteEpisode(id: string): PodcastEpisode[] {
+export async function deleteEpisode(id: string): Promise<PodcastEpisode[]> {
+  try {
+    await apiClient.delete(`/podcasts/${id}`)
+  } catch (err) {
+    console.error(`Failed to delete podcast ${id} via API:`, err)
+  }
   const updated = getEpisodes().filter((ep) => ep.id !== id)
   saveEpisodes(updated)
   return updated
 }
+

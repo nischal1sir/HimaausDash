@@ -1,14 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
-import { getFAQs, deleteFAQ } from '../../lib/faqStore'
+import { getFAQs, fetchFAQs, deleteFAQ } from '../../lib/faqStore'
 import type { FAQItem } from '../../types'
 
 export default function AllFAQsPage() {
   const [faqs, setFaqs] = useState<FAQItem[]>(() => getFAQs())
 
-  function handleDelete(id: string) {
-    setFaqs(deleteFAQ(id))
+  useEffect(() => {
+    async function load() {
+      const items = await fetchFAQs()
+      setFaqs(items)
+    }
+    load()
+  }, [])
+
+  async function handleDelete(id: string) {
+    const updated = await deleteFAQ(id)
+    setFaqs(updated)
   }
 
   return (

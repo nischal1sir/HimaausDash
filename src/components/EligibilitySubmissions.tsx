@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Pencil, Plus, Trash2, X, Search, Filter, CheckCircle, AlertCircle, Clock, Eye } from 'lucide-react'
 import type { EligibilitySubmission } from '../types'
 import { eligibilitySubmissions as initialSubmissions } from '../data'
+import apiClient from '../services/apiClient'
 
 type FormState = {
   studentName: string
@@ -27,11 +28,28 @@ const EMPTY_FORM: FormState = {
   status: 'Pending',
 }
 
+function normalizeSubmission(item: any): EligibilitySubmission {
+  return {
+    id: item._id || item.id || `es-${Date.now()}`,
+    studentName: item.studentName || item.fullName || item.name || 'Student',
+    email: item.email || '',
+    phone: item.phone || item.mobile || '',
+    destinationCountry: item.destinationCountry || item.country || 'Australia',
+    highestQualification: item.highestQualification || item.education || '',
+    gpaOrPercentage: item.gpaOrPercentage || item.gpa || item.score || '',
+    englishTest: item.englishTest || item.testType || 'IELTS',
+    englishScore: item.englishScore || item.testScore || '',
+    status: item.status || 'Pending',
+    submittedAt: item.submittedAt || item.createdAt?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+  }
+}
+
 export default function EligibilitySubmissionsPage() {
   const [submissions, setSubmissions] = useState<EligibilitySubmission[]>(initialSubmissions)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
   const [countryFilter, setCountryFilter] = useState('All')
+  const [loading, setLoading] = useState(true)
 
   // Modals state
   const [formModalOpen, setFormModalOpen] = useState(false)
@@ -41,6 +59,22 @@ export default function EligibilitySubmissionsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
+
+  useEffect(() => {
+    async function loadSubmissions() {
+      try {
+        const data = await apiClient.get<any[]>('/eligibility/submissions')
+        if (Array.isArray(data) && data.length > 0) {
+          setSubmissions(data.map(normalizeSubmission))
+        }
+      } catch (err) {
+        console.error('Failed to load eligibility submissions from API:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadSubmissions()
+  }, [])
 
   function openAddModal() {
     setEditingId(null)
@@ -70,16 +104,28 @@ export default function EligibilitySubmissionsPage() {
     setDetailModalOpen(true)
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const today = new Date().toISOString().slice(0, 10)
 
     if (editingId) {
+      try {
+        await apiClient.put(`/eligibility/submissions/${editingId}`, form)
+      } catch (err) {
+        console.error('Failed to update submission via API:', err)
+      }
       setSubmissions((prev) =>
         prev.map((s) => (s.id === editingId ? { ...s, ...form } : s))
       )
     } else {
-      const newSubmission: EligibilitySubmission = {
+      let createdItem: EligibilitySubmission | null = null
+      try {
+        const created = await apiClient.post<any>('/eligibility/submissions', form)
+        createdItem = normalizeSubmission(created)
+      } catch (err) {
+        console.error('Failed to create submission via API:', err)
+      }
+      const newSubmission: EligibilitySubmission = createdItem || {
         id: `es-${Date.now()}`,
         ...form,
         submittedAt: today,
@@ -89,9 +135,14 @@ export default function EligibilitySubmissionsPage() {
     setFormModalOpen(false)
   }
 
-  function confirmDelete(e: React.MouseEvent) {
+  async function confirmDelete(e: React.MouseEvent) {
     e.stopPropagation()
     if (deleteId) {
+      try {
+        await apiClient.delete(`/eligibility/submissions/${deleteId}`)
+      } catch (err) {
+        console.error(`Failed to delete submission ${deleteId} via API:`, err)
+      }
       setSubmissions((prev) => prev.filter((s) => s.id !== deleteId))
       setDeleteId(null)
       if (selectedSubmission?.id === deleteId) {
@@ -100,7 +151,12 @@ export default function EligibilitySubmissionsPage() {
     }
   }
 
-  function updateStatus(id: string, newStatus: 'Pending' | 'Approved' | 'Rejected') {
+  async function updateStatus(id: string, newStatus: 'Pending' | 'Approved' | 'Rejected') {
+    try {
+      await apiClient.put(`/eligibility/submissions/${id}/status`, { status: newStatus })
+    } catch (err) {
+      console.error(`Failed to update status for submission ${id} via API:`, err)
+    }
     setSubmissions((prev) =>
       prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s))
     )
@@ -108,6 +164,7 @@ export default function EligibilitySubmissionsPage() {
       setSelectedSubmission((prev) => prev ? { ...prev, status: newStatus } : null)
     }
   }
+
 
   // Get unique countries for filter dropdown
   const countries = Array.from(new Set(submissions.map((s) => s.destinationCountry)))
@@ -146,6 +203,14 @@ export default function EligibilitySubmissionsPage() {
           </span>
         )
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto w-full max-w-[1200px] flex items-center justify-center p-10">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-brand-600 border-t-transparent"></div>
+      </div>
+    )
   }
 
   return (

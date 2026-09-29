@@ -1,22 +1,44 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { getPosts, deletePost } from '../../lib/blogStore'
+import type { BlogPost } from '../../types'
 
 function formatDate(iso: string) {
   return iso
 }
 
 export default function AllPostsPage() {
-  const [posts, setPosts] = useState(() => getPosts())
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [perPage, setPerPage] = useState(25)
 
-  function confirmDelete() {
+  useEffect(() => {
+    getPosts().then((data) => {
+      setPosts(data)
+      setLoading(false)
+    })
+  }, [])
+
+  async function confirmDelete() {
     if (deleteId) {
-      setPosts(deletePost(deleteId))
+      try {
+        await deletePost(deleteId)
+        setPosts((prev) => prev.filter((p) => p.id !== deleteId))
+      } catch (err) {
+        console.error('Failed to delete post:', err)
+      }
       setDeleteId(null)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto w-full max-w-[1100px] flex items-center justify-center p-10">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-brand-600 border-t-transparent"></div>
+      </div>
+    )
   }
 
   return (

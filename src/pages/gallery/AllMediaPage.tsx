@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ImageOff, Plus, Trash2 } from 'lucide-react'
 import type { GalleryItem } from '../../types'
-import { getGalleryItems, deleteGalleryItem } from '../../lib/galleryStore'
+import { getGalleryItems, fetchGalleryItems, deleteGalleryItem } from '../../lib/galleryStore'
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -16,9 +16,18 @@ export default function AllMediaPage() {
   const [items, setItems] = useState<GalleryItem[]>(() => getGalleryItems())
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  function confirmDelete() {
+  useEffect(() => {
+    async function load() {
+      const list = await fetchGalleryItems()
+      setItems(list)
+    }
+    load()
+  }, [])
+
+  async function confirmDelete() {
     if (deleteId) {
-      setItems(deleteGalleryItem(deleteId))
+      const updated = await deleteGalleryItem(deleteId)
+      setItems(updated)
       setDeleteId(null)
     }
   }

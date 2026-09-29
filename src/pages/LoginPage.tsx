@@ -1,15 +1,25 @@
 import { useState, type FormEvent } from 'react'
 import { Eye, EyeOff, Lock, User } from 'lucide-react'
-import { AUTH_CREDENTIALS } from '../authConfig'
 import logo from "../assets/image/download.png"
 import loginBg from "../assets/image/photo.webp"
+import { apiClient } from '../services/apiClient'
 
 interface LoginPageProps {
   onSuccess: () => void
 }
 
+interface AuthResponse {
+  token: string
+  user: {
+    id: string
+    name: string
+    email: string
+    role: string
+  }
+}
+
 export default function LoginPage({ onSuccess }: LoginPageProps) {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -20,18 +30,27 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
     setError('')
     setSubmitting(true)
 
-    // Tiny delay so the button's loading state is visible — feels less abrupt.
-    setTimeout(() => {
-      if (
-        username.trim() === AUTH_CREDENTIALS.username &&
-        password === AUTH_CREDENTIALS.password
-      ) {
+    try {
+      const res = await apiClient.post<AuthResponse>('/auth/login', {
+        email: email.trim(),
+        password,
+      })
+
+      if (res && res.token) {
+        localStorage.setItem('token', res.token)
+        localStorage.setItem('auth_token', res.token)
+        if (res.user) {
+          localStorage.setItem('auth_user', JSON.stringify(res.user))
+        }
         onSuccess()
       } else {
-        setError('Incorrect username or password.')
-        setSubmitting(false)
+        setError('Invalid response from server.')
       }
-    }, 300)
+    } catch (err: any) {
+      setError(err?.message || 'Authentication failed. Please check your credentials.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   // TODO: Replace with backend authentication
@@ -116,7 +135,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
 
           <div>
             <label className="mb-2 block font-medium text-slate-700">
-              Username
+              Email Address
             </label>
 
             <div className="relative">
@@ -127,10 +146,11 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
               />
 
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email address"
                 className="w-full rounded-xl border border-slate-300 py-3 pl-12 pr-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
               />
 

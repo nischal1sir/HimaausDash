@@ -1,16 +1,48 @@
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import PostForm from './PostForm'
 import { getPost, updatePost, type PostInput } from '../../lib/blogStore'
+import type { BlogPost } from '../../types'
 
 export default function EditPostPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const post = id ? getPost(id) : undefined
+  const [post, setPost] = useState<BlogPost | undefined>(undefined)
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(input: PostInput) {
-    if (id) updatePost(id, input)
-    navigate('/blog-posts/all-posts')
+  useEffect(() => {
+    if (id) {
+      getPost(id).then((data) => {
+        setPost(data)
+        setLoading(false)
+      })
+    } else {
+      setLoading(false)
+    }
+  }, [id])
+
+  async function handleSubmit(input: PostInput) {
+    if (!id) return
+    setSubmitting(true)
+    setError('')
+    try {
+      await updatePost(id, input)
+      navigate('/blog-posts/all-posts')
+    } catch (err: any) {
+      setError(err?.message || 'Failed to update post')
+      setSubmitting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto w-full max-w-3xl flex items-center justify-center p-10">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-brand-600 border-t-transparent"></div>
+      </div>
+    )
   }
 
   if (!post) {
@@ -40,9 +72,13 @@ export default function EditPostPage() {
         </div>
       </div>
 
+      {error && (
+        <div className="rounded-xl bg-red-50 p-3 text-sm text-red-600">{error}</div>
+      )}
+
       <PostForm
         initial={post}
-        submitLabel="Save Changes"
+        submitLabel={submitting ? 'Saving...' : 'Save Changes'}
         onSubmit={handleSubmit}
         onCancel={() => navigate('/blog-posts/all-posts')}
       />

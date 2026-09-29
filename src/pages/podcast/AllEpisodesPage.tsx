@@ -1,11 +1,11 @@
 // The "All Episodes" page. Shows every episode that's been added, each
 // with its video playable right in the card, newest first.
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import type { PodcastEpisode } from '../../types'
-import { getEpisodes, deleteEpisode } from '../../lib/podcastStore'
+import { getEpisodes, fetchEpisodes, deleteEpisode } from '../../lib/podcastStore'
 import { getVideoInfo } from '../../lib/videoLink'
 
 function formatDate(iso: string) {
@@ -47,9 +47,18 @@ export default function AllEpisodesPage() {
   const [episodes, setEpisodes] = useState<PodcastEpisode[]>(() => getEpisodes())
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  function confirmDelete() {
+  useEffect(() => {
+    async function load() {
+      const list = await fetchEpisodes()
+      setEpisodes(list)
+    }
+    load()
+  }, [])
+
+  async function confirmDelete() {
     if (deleteId) {
-      setEpisodes(deleteEpisode(deleteId))
+      const updated = await deleteEpisode(deleteId)
+      setEpisodes(updated)
       setDeleteId(null)
     }
   }

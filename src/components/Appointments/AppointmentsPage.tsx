@@ -5,6 +5,7 @@ import type { Applicant, Status } from './types'
 
 /* ───────── Shared Mock Data & Helpers ───────── */
 import { initialApplicants, createApplicantFromForm, initials } from './data'
+import apiClient from '../../services/apiClient'
 
 /* ───────── Child Components ───────── */
 import StatCards from './components/StatCards'
@@ -17,6 +18,23 @@ import DeleteConfirmModal from './components/DeleteConfirmModal'
 const ITEMS_PER_PAGE = 6
 const APPOINTMENTS_STORAGE_KEY = 'himaaus-appointments'
 
+function normalizeApplicant(item: any, index: number): Applicant {
+  return {
+    id: typeof item.id === 'number' ? item.id : index + 1,
+    name: item.name || item.studentName || item.fullName || 'Applicant',
+    email: item.email || '',
+    avatar: initials(item.name || item.studentName || 'Applicant'),
+    program: item.program || item.course || 'Undergraduate',
+    degree: item.degree || item.highestQualification || "Bachelor's",
+    destination: item.destination || item.destinationCountry || 'Australia',
+    destinationFlag: item.destinationFlag || '🇦🇺',
+    testType: item.testType || item.englishTest || 'IELTS',
+    testScore: item.testScore || item.englishScore || '6.5',
+    status: (item.status as Status) || 'Pending',
+    additionalMessage: item.additionalMessage || item.message || '',
+  }
+}
+
 export default function AppointmentsPage() {
   const [applicants, setApplicants] = useState<Applicant[]>(() => {
     try {
@@ -28,8 +46,25 @@ export default function AppointmentsPage() {
   })
 
   useEffect(() => {
+    async function loadAppointments() {
+      try {
+        const data = await apiClient.get<any[]>('/appointments')
+        if (Array.isArray(data) && data.length > 0) {
+          const list = data.map((item, idx) => normalizeApplicant(item, idx))
+          setApplicants(list)
+          localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(list))
+        }
+      } catch (err) {
+        console.error('Failed to fetch appointments from API:', err)
+      }
+    }
+    loadAppointments()
+  }, [])
+
+  useEffect(() => {
     localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(applicants))
   }, [applicants])
+
   const [activeFilter, setActiveFilter] = useState<string>('All')
   const [selectedCountry, setSelectedCountry] = useState<string>('All')
   const [currentPage, setCurrentPage] = useState(1)

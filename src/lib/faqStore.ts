@@ -1,4 +1,5 @@
 import type { FAQItem } from '../types'
+import apiClient from '../services/apiClient'
 
 const STORAGE_KEY = 'himaaus-dash-faq-items'
 
@@ -16,6 +17,14 @@ const DEFAULT_FAQS: FAQItem[] = [
   },
 ]
 
+function normalizeFAQ(item: any): FAQItem {
+  return {
+    id: item._id || item.id || `faq-${Date.now()}`,
+    question: item.question || '',
+    answer: item.answer || '',
+  }
+}
+
 export function getFAQs(): FAQItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -26,23 +35,52 @@ export function getFAQs(): FAQItem[] {
   }
 }
 
+export async function fetchFAQs(): Promise<FAQItem[]> {
+  try {
+    const data = await apiClient.get<any[]>('/faqs')
+    if (Array.isArray(data)) {
+      const normalized = data.map(normalizeFAQ)
+      saveFAQs(normalized)
+      return normalized
+    }
+  } catch (err) {
+    console.error('Failed to fetch FAQs from API:', err)
+  }
+  return getFAQs()
+}
+
 function saveFAQs(items: FAQItem[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
 }
 
-export function addFAQ(question: string, answer: string): FAQItem[] {
-  const newFAQ: FAQItem = {
-    id: `faq-${Date.now()}`,
-    question,
-    answer,
+export async function addFAQ(question: string, answer: string): Promise<FAQItem[]> {
+  try {
+    const created = await apiClient.post<any>('/faqs', { question, answer })
+    const newFAQ = normalizeFAQ(created)
+    const updated = [newFAQ, ...getFAQs()]
+    saveFAQs(updated)
+    return updated
+  } catch (err) {
+    console.error('Failed to add FAQ via API:', err)
+    const newFAQ: FAQItem = {
+      id: `faq-${Date.now()}`,
+      question,
+      answer,
+    }
+    const updated = [newFAQ, ...getFAQs()]
+    saveFAQs(updated)
+    return updated
   }
-  const updated = [newFAQ, ...getFAQs()]
-  saveFAQs(updated)
-  return updated
 }
 
-export function deleteFAQ(id: string): FAQItem[] {
+export async function deleteFAQ(id: string): Promise<FAQItem[]> {
+  try {
+    await apiClient.delete(`/faqs/${id}`)
+  } catch (err) {
+    console.error(`Failed to delete FAQ ${id} via API:`, err)
+  }
   const updated = getFAQs().filter((item) => item.id !== id)
   saveFAQs(updated)
   return updated
 }
+

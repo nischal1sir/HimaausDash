@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import PostForm from './PostForm'
@@ -5,10 +6,19 @@ import { addPost, type PostInput } from '../../lib/blogStore'
 
 export default function NewPostPage() {
   const navigate = useNavigate()
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(input: PostInput) {
-    addPost(input)
-    navigate('/blog-posts/all-posts')
+  async function handleSubmit(input: PostInput) {
+    setSubmitting(true)
+    setError('')
+    try {
+      await addPost(input)
+      navigate('/blog-posts/all-posts')
+    } catch (err: any) {
+      setError(err?.message || 'Failed to create post')
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -27,8 +37,12 @@ export default function NewPostPage() {
         </div>
       </div>
 
+      {error && (
+        <div className="rounded-xl bg-red-50 p-3 text-sm text-red-600">{error}</div>
+      )}
+
       <PostForm
-        submitLabel="Create Post"
+        submitLabel={submitting ? 'Creating...' : 'Create Post'}
         onSubmit={handleSubmit}
         onCancel={() => navigate('/blog-posts/all-posts')}
       />
